@@ -1,0 +1,71 @@
+data=[(1, 101, 2019),
+(1, 102, 2019),
+(1, 103, 2019),
+(1, 104, 2019),
+(1, 105, 2019),
+(1, 106, 2019),
+(1, 107, 2019),
+(1, 108, 2019),
+(1, 109, 2019),
+(1, 110, 2019),
+(2, 101, 2019),
+(2, 102, 2019),
+(2, 103, 2019),
+(2, 104, 2019),
+(2, 105, 2019),
+(2, 106, 2019),
+(2, 107, 2019),
+(2, 108, 2019),
+(2, 109, 2019),
+(2, 110, 2019),
+(3, 101, 2019),
+(3, 102, 2019),
+(3, 103, 2019),
+(3, 104, 2019),
+(3, 105, 2019),
+(3, 106, 2019),
+(3, 107, 2019),
+(3, 108, 2019),
+(4, 101, 2019),
+(4, 102, 2019),
+(4, 103, 2019),
+(4, 104, 2019),
+(4, 105, 2019),
+(4, 106, 2019),
+(4, 107, 2019),
+(4, 108, 2019),
+(4, 109, 2019),
+(1, 105, 2020),
+(1, 106, 2020),
+(3, 107, 2020),
+(4, 108, 2019),
+(4, 109, 2020),
+(2, 106, 2020),
+(1, 107, 2020),
+(4, 110, 2020),
+(4, 111, 2020)]
+
+
+schema=["StudentID","CourseID","EnrollmentYear"]
+
+#create DataFrame and display data
+df=spark.createDataFrame(data=data,schema=schema)
+display(df)
+
+# Filter for EnrollmentYear 2019
+from pyspark.sql.functions import col,countDistinct
+student_batch_2019=df.filter(col("EnrollmentYear")==2019)
+student_batch_2019.printSchema()
+display(student_batch_2019)
+
+# Calculate count of distinct CourseID for each StudentID
+student_course_count=student_batch_2019.groupBy("StudentID").agg(countDistinct("CourseID").alias("count_CourseID"))
+display(student_course_count)
+
+# Calculate total count of distinct CourseID for EnrollmentYear 2019
+total_course_count = student_batch_2019.select(countDistinct("CourseID")).collect()[0][0]
+display(total_course_count)
+
+# Filter students having count_CourseID equal to total_course_count
+result = student_course_count.filter(col("count_CourseID") == total_course_count)
+display(result)
