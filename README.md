@@ -5,3 +5,6 @@ Data engineering & Data Analyst is a critical field that involves designing, bui
 Python: Widely used for data manipulation, scripting, and automation.
 
 SQL: Essential for querying and managing relational databases.
+<h3>2. Database Management : </h3>
+Relational Databases: Knowledge of MySQL, PostgreSQL, SQL Server, etc.
+NoSQL Databases: Understanding of databases like MongoDB, Cassandra, and DynamoDB.
