@@ -25,5 +25,21 @@ Data engineering & Data Analyst is a critical field that involves designing, bui
         <li>Hadoop Ecosystem: Understanding of HDFS, MapReduce, Hive, Pig, etc.</li>
         <li>Apache Spark: Proficiency in processing large datasets in distributed computing environments.</li>
         </ul>
+        <li>Cloud Platforms</li>
+        <ul>
+        <li>Knowledge of cloud services (AWS, GCP, Azure) for data storage, processing, and analytics.</li>
+        </ul>
+        <li>Data Modeling and Architecture</li>
+        <ul>
+        <li>Ability to design efficient data models and architect data pipelines.</li>
+        </ul>
+        <li>Data APIs and Frameworks</li>
+        <ul>
+        <li>Experience with APIs and frameworks for data integration and processing.</li>
+        </ul>
+        <li>Data Visualization Tools</li>
+        <ul>
+        <li>understanding of data visualization tools like Tableau, Power BI, or Looker to present data insights.</li>
+        </ul>
 </ul>
 
