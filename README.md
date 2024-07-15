@@ -16,5 +16,14 @@ Data engineering & Data Analyst is a critical field that involves designing, bui
         <ul>
         <li>Experience with data warehousing tools like Amazon Redshift, Google BigQuery, and Snowflake.</li>
         </ul>
+        <li>ETL (Extract, Transform, Load) Tools</li>
+        <ul>
+        <li>Familiarity with ETL tools such as Apache NiFi, Talend, Informatica, and Airflow.</li>
+        </ul>
+        <li>Big Data Technologies</li>
+        <ul>
+        <li>Hadoop Ecosystem: Understanding of HDFS, MapReduce, Hive, Pig, etc.</li>
+        <li>Apache Spark: Proficiency in processing large datasets in distributed computing environments.</li>
+        </ul>
 </ul>
 
