@@ -50,4 +50,5 @@ Data engineering & Data Analyst is a critical field that involves designing, bui
         <li>Basic knowledge of machine learning concepts and frameworks can be advantageous.</li>
         </ul>
 </ul>
+By cultivating these skills, a data engineer and data analyst can proficiently manage data workflows, ensure data integrity, find insights, create reports and dashboards, and significantly contribute to the success of data-driven projects.
 
