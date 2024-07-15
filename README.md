@@ -4,7 +4,7 @@ Data engineering & Data Analyst is a critical field that involves designing, bui
 <ul>
         <li> Programming Languages</li>
         <ul>
-            <li>Python : Widely used for data manipulation, scripting, and automation.</li>
+            <li>Python(Numpy, Pandas,Scipy, MatPlatlib,Seaborn) : Widely used for data manipulation, scripting, and automation.</li>
             <li>SQL : Essential for querying and managing relational databases.</li>
         </ul>
         <li>Database Management</li>
@@ -40,6 +40,14 @@ Data engineering & Data Analyst is a critical field that involves designing, bui
         <li>Data Visualization Tools</li>
         <ul>
         <li>understanding of data visualization tools like Tableau, Power BI, or Looker to present data insights.</li>
+        </ul>
+        <li>Version Control and Collaboration Tools</li>
+        <ul>
+        <li>Proficiency with version control systems (e.g., Git) and collaboration platforms (e.g., GitHub, GitLab)..</li>
+        </ul>
+        <li>Understanding of Machine Learning Concepts</li>
+        <ul>
+        <li>Basic knowledge of machine learning concepts and frameworks can be advantageous.</li>
         </ul>
 </ul>
 
