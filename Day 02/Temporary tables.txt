@@ -1,0 +1,146 @@
+Q1. What are Temporary tables?
+
+-A Temporary table is a physical table that is created in the tempDB database.
+-Temporary table stores data Temporally.
+-These tables are called Temporary because they exist up to the session , once session closes Temporary tables are Automatically Destroyed.
+-Temporary table are good for large Dataset.
+-There are 2 types of Temporary tables - Local Temporary tables and Global Temporary tables.
+
+Local Temporary tables :
+-Local Temporary tables are visible to the current session and deleted when the session is closed.
+-To create a local Temporary table prefix the table name with 1 pound (#) symbol.
+   syn: create table #temp_table(
+            Id int,
+            Name varchar(20));
+-To explicitly drop temp table: - DROP TABLE #tempEmployee.
+-If the temporary table, is created inside the stored procedure, it gets dropped automatically upon the completion of stored procedure execution.
+
+Example:
+create Procedure spCreateLocalTempTable as
+Begin
+Create Table #tempEmployee(Id int, Name nvarchar(20))
+
+Insert into #tempEmployee Values(1, 'Mike') 
+Insert into #tempEmployee Values(2, 'John') 
+Insert into #tempEmployee Values(3, 'Todd')
+Select * from #tempEmployee 
+End
+
+Note: Temporary table will be destroyed immediately after the completion of the stored procedure execution.
+execute spCreateLocalTempTable; // Will give the result set
+Select * from #tempEmployee
+// Error: Invalid object name '#tempEmployee'.
+
+
+Global Temporary tables:
+-Global Temporary table are visible to all session and deleted when the last session that referencing the table is closed.
+
+-To create a Global Temporary Table, prefix the name of the table with 2 pound (##) symbols.
+ Syn: create table ##temp_table(
+            Id int,
+            Name varchar(20));
+-Multiple users, across multiple connections can have local temporary tables with the same name, but, a global temporary table name has to be unique.
+
+Example:
+Create Procedure spCreateGlobalTempTable
+ as
+Begin
+Create Table ##globalEmployee(Id int, Name nvarchar(20))
+Insert into ##globalEmployee Values(1, 'Mike') 
+Insert into ##globalEmployee Values(2, 'John') 
+Insert into ##globalEmployee Values(3, 'Todd')
+Select * from ##globalEmployee 
+End
+// Execute procedure
+execute spCreateGlobalTempTable // Will give the result set 
+Select * from ##globalEmployee // Success
+Note: unlike Local temp tables, we can use global temp tables in other stored procedures as well.
+Create Procedure spCreateGlobalTempTable2 
+as
+Begin
+Select * from ##globalEmployee End
+execute spCreateGlobalTempTable2 ;
+//Note: it will run successfully and will give the desired results
+
+
+
+Q2. What are Temp variables?
+-Temp Variables are also used for holding data temporarily just like a temp table.
+-Temp Variables are created using a “DECLARE” statement and are assigned values using either a SET or SELECT command.
+-Scope of the table variable is up to the program , once program execution is completed then table variable are destroyed.
+Table variable prefixed with '@' .
+  Declaring Table Variable :
+    Declare @T Table
+      (Eno int,
+       Ename varchar(30),
+       sal Money)
+
+Inserting data into the Table :
+  insert into @T values(1,'Jnana',500000)
+
+-We can implement all DML commands for Temp Variables.
+
+// Step1: Declare temp variable 
+Declare @My_vari TABLE
+(
+ID int,
+Name Nvarchar(50), Salary Int ,
+City_Name Nvarchar(50)
+)
+//Step2: insert data
+Insert Into @My_vari Values(1,'Mark',1000,'USA')
+ Insert Into @My_vari Values(2,'Steve',2000,'UK')
+
+//Step3: Select data
+select * from @My_vari
+
+
+Q3. What is Table valued parameter (TVP)? OR
+How can we pass table as parameter to Stored Procedure?
+
+-Table Valued Parameter allows a table (i.e. multiple rows of data) to be passed as a parameter to a stored procedure.
+-Table valued parameters must be passed as read-only to stored procedures, functions etc.
+-You cannot perform DML operations like INSERT, UPDATE or DELETE on a table-valued parameter in the body of a function, stored procedure etc.
+
+Example :
+Step 1 : Create User-defined Table Type 
+CREATE TYPE EmpTableType AS TABLE (
+Id INT PRIMARY KEY, Name NVARCHAR(50), Gender NVARCHAR(10)
+)
+Step 2: Use the User-defined Table Type as a parameter in the stored procedure.
+CREATE PROCEDURE spInsertEmployees
+ @EmpTableType EmpTableType READONLY 
+AS
+BEGIN
+INSERT INTO Employees
+SELECT * FROM @EmpTableType 
+END
+Step 3: Declare a table variable, insert the data and then pass the table variable as a parameter to the stored procedure.
+DECLARE @EmployeeTableType EmpTableType
+INSERT INTO @EmployeeTableType VALUES (1, 'Mark', 'Male') 
+INSERT INTO @EmployeeTableType VALUES (2, 'Mary', 'Female')
+ INSERT INTO @EmployeeTableType VALUES (3, 'John', 'Male')
+
+EXECUTE spInsertEmployees @EmployeeTableType
+
+Q4. Difference between Temporary variables and Temporary tables?
+
+Temporary variables:
+1.Scope of the Temporary variable is up to the program , once program execution is completed then table variable are destroyed.
+2.Declared using Declare statement only
+3.We cannot drop or truncate a Temp variable
+4.Temp Variable doesn't support Foreign Keys.
+
+Temporary tables :
+1.The scope of the Temporary Table up to the session , once session closes Temporary tables are Automatically Destroyed.
+2.Temp Tables can be created using Create Table and Select Into commands.
+3.We can drop or truncate a Temp Tables.
+4.Temp Tables and Temp Variables both support unique key, primary key, check constraints, Not null and default constraints
+
+
+
+
+
+
+
+
