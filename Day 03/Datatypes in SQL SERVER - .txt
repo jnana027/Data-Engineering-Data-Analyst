@@ -75,7 +75,7 @@ Datatypes in SQL SERVER :-
    1 MB = 1024 KB
    1 KB = 1024 BYES 
 
- 2*1024*1024*1024 BYTES
+
 
 => char/varchar/varchar(max) allows  ascii chars (256 chars) that includes
      a-z,A-Z,0-9,special chars.
@@ -158,7 +158,7 @@ NCHAR/NVARCHAR/NVARCHAR(MAX) :-
                AMOUNT		SMALLMONEY
                PRICE		SMALLMONEY
 
-30-mar-23
+
 
  DATE & TIME :-  
  --------------------
