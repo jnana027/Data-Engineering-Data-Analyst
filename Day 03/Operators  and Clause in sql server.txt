@@ -1,0 +1,555 @@
+Operators  and Clause in sql server :- 
+  ---------------------------------
+
+Operators :
+
+1  Arithmetic Operators  =>  +   -    *     /      %
+
+  10+5  =>   15
+  10-5   =>   5
+  10*5   =>   50
+  10/5  =>   2
+  10%5 =>   0
+
+2  Relational Operators   =>     >     >=    <     <=    =     <>  or  !=
+
+    10>5      =>   TRUE 
+    10<5      =>   FALSE
+    10=5      =>   FALSE
+    10<>5    =>   TRUE
+
+ 3 Logical Operators  =>    AND     OR     NOT   
+
+ 4 Special Operators  =>   BETWEEN
+                                         IN
+                                         LIKE
+                                         IS
+                                         ANY
+                                         ALL
+                                         EXISTS
+                                         PIVOT
+
+ 5  Set Operators       =>    UNION
+                                         UNION ALL
+                                         INTERSECT
+                                         EXCEPT
+
+
+
+
+Clause :
+The order of execution process of a clause in SQl is typically follows these steps
+         From
+          |
+         join
+          |
+         where
+          |
+         groupBy
+          |
+        having
+          |
+        select
+          |
+        Distinct
+          |
+        order by
+          |
+         top n
+
+
+WHERE clause :- 
+------------------------
+
+ => used to fetch specific row/rows from table based on a condition.
+
+        SELECT COLUMNS
+        FROM TABNAME
+        WHERE  CONDITION 
+
+ CONDITION :- 
+ ------------------
+
+   => condition is a  relational expression
+
+           COLNAME   OP    VALUE
+
+   => OP must be any relational  operator like  >   >=   <    <=   =    <> 
+  => if  cond = true  row is selected.
+  => if cond = false row is not selected
+
+  Examples :- 
+  ----------------
+
+  => display  employee details whose id = 103 ? 
+
+       SELECT  *  FROM  EMP  WHERE  EMPID = 103 
+
+   => display employee details whose name = SATISH ?
+
+       SELECT * FROM EMP  WHERE ENAME='SATISH' 
+
+  => display employees earning more than 5000 ?
+
+       SELECT * FROM EMP WHERE SAL>5000
+
+   => display  employees joined after 2020 ?
+
+      SELECT * FROM EMP WHERE HIREDATE > 2020 => ERROR
+
+      SELECT * FROM EMP WHERE HIREDATE > '2020-12-31'
+
+  => display employees joined before 2020 ?
+
+      SELECT * FROM EMP WHERE  HIREDATE <  '2020-01-01' 
+
+ => employees not working for dept 20 ?
+ 
+     SELECT *  FROM  EMP  WHERE  DNO  <> 20 
+
+ compound condition :- 
+ -----------------------------
+
+ => multiple conditions combined with  AND / OR  operators is called
+      compound condition.
+
+     WHERE    COND1    AND    COND2            RESULT
+                        T		 T		T
+	        T                       F                             F
+                        F                       T                             F
+                        F                       F                             F
+
+     WHERE    COND1   OR     COND2             RESULT
+	        T                       T                         T
+                        T                       F                         T
+                        F                       T                         T
+                        F                       F                         F
+
+
+
+
+
+=> display employees working as clerk,manager ? 
+ 
+     SELECT * FROM EMP  
+                  WHERE JOB = 'CLERK'  OR JOB='MANAGER' 
+
+ => display employees whose name = sachin,vijay,satish ?
+ 
+     SELECT *
+     FROM EMP
+     WHERE   ENAME='SACHIN'  OR  ENAME='VIJAY' OR ENAME='SATISH' 
+
+ => display employees working as clerk and working for dept 20 ?
+ 
+      SELECT *
+      FROM EMP 
+      WHERE  JOB='CLERK'  AND  DNO=20
+   
+=> display employees working for 10th dept and earning more than 5000 ?
+
+    SELECT *
+    FROM EMP
+    WHERE  DNO=10   AND   SAL>5000
+
+ => display employees earning more than 5000 and less than 10000 ?
+
+     SELECT *
+     FROM EMP
+     WHERE SAL>5000     AND   SAL<10000
+
+=> employees joined in 2020 year ?
+
+    SELECT *
+    FROM EMP
+    WHERE HIREDATE  >= '2020-01-01'
+                  AND
+                  HIREDATE <= '2020-12-31'
+
+  scenario :- 
+  --------------
+
+   STUDENT
+   SNO    SNAME    S1     S2     S3
+   1          A              80     90     70
+   2         B               30     60     50
+
+ CREATE TABLE STUDENT
+ (
+  SID  INT,
+  SNAME VARCHAR(10),
+  S1 INT,S2 INT,S3 INT
+  )
+
+   INSERT INTO STUDENT VALUES(1,'A',80,90,70),
+                                                        (2,'B',30,60,50)
+
+   => display list of students who are passed ?
+
+     SELECT * 
+     FROM STUDENT
+     WHERE  S1>=35  AND   S2>=35   AND    S3>=35
+
+    => list of students who are failed ?
+ 
+       SELECT *
+       FROM STUDENT 
+       WHERE  S1<35   OR  S2<35    OR    S3<35
+
+  IN operator :-  
+  ------------------
+
+ => use IN operator for comparision with list of values.
+ => use IN operator for "=" comparision with multiple values.
+
+       WHERE  COLNAME =  V1,V2,V3,--       =>  INVALID
+ 
+       WHERE COLNAME IN (V1,V2,V3,----)   =>  VALID
+
+ => employees whose id = 100,103,105 ?
+
+      SELECT * 
+      FROM EMP
+      WHERE EMPID IN (100,103,105) 
+ 
+ => employees not working for dept 10,20  ?
+ 
+     SELECT *
+     FROM EMP
+     WHERE DEPTNO <> 10,20  => error
+        
+    SELECT *
+    FROM EMP
+    WHERE DNO NOT IN (10,20)
+
+ BETWEEN operator :- 
+ ----------------------------
+
+ => use BETWEEN operator for range comparision.
+ 
+    ex :-   100 to 500 
+              2020 to 2025
+              
+          WHERE  COLNAME  BETWEEN  V1 AND V2 
+ 
+ => display employees earning between 5000 and 10000 ?
+
+     SELECT * FROM EMP WHERE SAL BETWEEN 5000 AND 10000 
+
+                                                      (SAL>=5000 AND SAL<=10000)
+
+ => employees joined in 2020 ? 
+
+     SELECT * 
+     FROM EMP 
+     WHERE HIREDATE BETWEEN '2020-01-01' AND '2020-12-31' 
+
+  => not joined in 2020 ?
+
+       WHERE HIREDATE NOT BETWEEN '2020-01-01' AND '2020-12-31' 
+
+
+
+=> employees working as clerk,manager and earning between 5000 and 10000
+      and joined in 2020 and not working for dept 10,20 ?
+
+      SELECT *
+      FROM EMP
+      WHERE JOB  IN ('CLERK','MANAGER')
+                    AND
+                    SAL BETWEEN 5000 AND 10000
+                    AND
+                    HIREDATE BETWEEN  '2020-01-01' AND '2020-12-31'
+                    AND
+                    DNO NOT IN (10,20)
+
+=> 
+
+  PRODUCTS
+  PRODID    PNAME     PRICE     CATEGORY    BRAND
+  
+  display  samsung,redmi,realme mobile phones price between 10000 and 20000 ?
+
+     SELECT *
+     FROM PRODUCTS
+     WHERE  BRAND IN ('SAMSUNG','REDMI','REALME')
+                     AND
+                    CATEGORY='MOBILE PHONES'
+                    AND
+                    PRICE BETWEEN 10000 AND 20000
+
+   => 
+
+    CUSTOMERS
+    CID    NAME     GENDER     AGE     CITY  
+
+    list of male customers age between 30 and 40 and staying in hyd,blr,mum ?
+
+    SELECT *
+    FROM CUSTOMERS
+    WHERE GENDER='MALE'
+                   AND
+                   AGE BETWEEN 30 AND 40
+                   AND
+                   CITY IN ('HYD','BLR','MUM')
+
+ LIKE operator :- 
+ ---------------------
+
+ => use LIIKE operator for pattern comparision
+
+    
+       WHERE  COLNAME  LIKE  'PATTERN'
+       
+
+ => pattern contains alphabets,digits,special chars and wildcard chars.
+
+   wildcard chars :- 
+   -------------------------
+
+      %        => 0 or many chars
+
+      _         => exactly 1 char
+
+ 
+   => employees name starts with 'S' ?
+
+        SELECT * FROM EMP WHERE ENAME  LIKE  'S%' 
+
+  => employees name ends with 'R' ?
+
+      SELECT * FROM EMP WHERE ENAME  LIKE  '%R'
+
+  => employees name contains 'A" ?
+
+       SELECT * FROM EMP WHERE ENAME  LIKE  '%A%' 
+
+   => where  'A' is the 3rd char in their name ?
+ 
+        SELECT *
+        FROM EMP
+        WHERE ENAME LIKE  '__ A%' 
+
+  => where 'A' is the 3rd char from last ?
+
+       SELECT *
+       FROM EMP
+       WHERE  ENAME LIKE  ' %A__'
+
+
+   => employees name starts with 'A','V','S' ?
+
+       SELECT * 
+        FROM EMP 
+        WHERE  ENAME LIKE  'A%'
+                       OR
+                       ENAME LIKE 'V%'
+                       OR 
+                       ENAME LIKE 'S%' 
+
+    SELECT *
+    FROM EMP 
+    WHERE ENAME  LIKE   '[AVS]%' 
+
+ 
+    [  ]  =>  use square brackets to specify group of chars in particular position.
+
+
+ => name starts between 'A' and 'P'  ?
+
+        SELECT *
+        FROM EMP
+        WHERE  ENAME  LIKE  ' [A-P]%' 
+
+  IS operator :- 
+  ------------------
+
+  => use IS operator for NULL comparision
+
+       WHERE  COLNAME IS NULL
+       WHERE  COLNAME IS NOT NULL
+
+ => find the employees not earning salary ?
+
+     SELECT *
+     FROM EMP
+     WHERE SAL  IS  NULL 
+
+ => find the employees earning salary ?
+
+     SELECT *
+     FROM EMP
+     WHERE SAL IS NOT NULL 
+
+
+ORDER BY clause :- 
+----------------------------  
+
+=> used to sort data based on one or more columns either in ascending or in descending order
+
+     SELECT columns
+     FROM tabname
+     [WHERE cond]
+     ORDER BY  colname ASC/DESC ,----------
+
+ => default order is ascending 
+ => use DESC for descending order
+
+ => arrange employee list name wise ascending order ?
+
+     SELECT *
+     FROM EMP
+     ORDER BY ENAME  ASC 
+
+ => arrange employee list sal wise desc order ? 
+
+     SELECT *
+     FROM EMP
+     ORDER BY SAL DESC 
+
+     NOTE :-  
+
+    =>  in order by  nulls treated low , so in ascending order nulls are displayed
+          first and in descending order nulls displayed last.
+
+  => arrange employee list dept wise asc and with in dept hiredate wise asc ?
+
+       SELECT *
+       FROM EMP
+       ORDER BY  DNO ASC , HIREDATE ASC 
+
+     100	SACHIN	CLERK		5000.00	2023-03-30	10
+     101	RAVI	ANALYST		8000.00	2023-03-30	10  
+    104	KUMAR	NULL		NULL	2018-04-20	20
+    102	AJAY	CLERK		4000.00	2019-10-05	20
+    103	VIJAY	MANAGER	9000.00	2020-05-10	30
+    105	SATISH	NULL		NULL	2023-03-30	30
+
+ => arrange employee list dept wise asc and with in dept sal wise desc ?
+
+     SELECT *
+     FROM EMP 
+     ORDER BY  DNO ASC , SAL DESC 
+
+     1   A   3000  20			 5   E   4000 10
+     2   B   5000 30			 3   C   2000 10
+     3   C   2000 10 =============>	 4   D   6000 20
+     4   D   6000 20			 1   A   3000  20
+     5   E   4000 10			 2   B   5000 30
+     
+ => 
+
+  STUDENT
+  SNO   SNAME    M     P    C
+  1         A             80    70    90
+  2         B             60    50    70
+  3         C            90     80    70
+  4         D            90     70    80
+
+ => arrange student list  avg wise desc , m desc, p  desc  ?
+
+ SELECT *
+ FROM STUDENT
+ ORDER BY (M+P+C)/3  DESC ,M DESC,P DESC 
+
+3         C            90     80    70
+4         D            90     70    80
+1         A             80    70    90
+2         B             60    50    70
+
+ => to display avg in the output 
+
+ SELECT  * , (M+P+C)/3  AS AVG
+ FROM STUDENT
+ ORDER BY (M+P+C)/3 DESC,M DESC,P DESC
+
+ 
+3         C            90     80    70	80
+4         D            90     70    80	80
+1         A             80    70    90	80
+2         B             60    50    70	60
+
+ALIAS :- 
+------------
+
+=>  alias means another name 
+=>  used to change column heading
+
+        colname/expr   AS   ALIAS 
+
+ => display  employee names and annual salaries ? 
+ 
+    SELECT  ENAME,SAL*12  AS "ANNUAL SAL"  FROM EMP 
+
+    SELECT ENAME,SAL*12 AS [ANNUAL SAL] FROM EMP 
+
+ => display   ENAME  SAL    HRA    DA    TAX    TOTSAL   ?
+
+                   HRA = house rent allowance = 20% on sal
+                   DA   =  dearness allowance = 30% on sal
+                   TAX =  10% on sal
+                   TOTSAL = SAL + HRA + DA - TAX 
+
+     SELECT  ENAME,SAL,
+                    SAL*0.2 AS HRA,
+                    SAL*0.3 AS DA,
+                    SAL*0.1 AS TAX,
+                    SAL+(SAL*0.2)+(SAL*0.3)-(SAL*0.1) AS TOTSAL
+     FROM EMP
+
+
+DISTINCT clause :- 
+   -------------------------
+
+  =>  DISTINCT claus eliminates duplicates from select statement output
+
+             SELECT  DISTINCT col1
+                            DISTINCT col1,col2,----
+
+    ex :-  
+
+   1	SELECT DISTINCT DNO FROM EMP
+
+      	10
+	20	
+	30
+
+   2           SELECT DISTINCT JOB FROM EMP 
+
+                ANALYST
+               CLERK
+               MANAGER
+
+    TOP clause :- 
+    ------------------
+
+    => used to display top n rows from table.
+
+         SELECT   TOP  <n>    COLNAMES / *
+         FROM TABNAME
+         [WHERE COND]
+         [ORDER BY COLNAME ASC/DESC]
+
+ =>  display first 5 rows from emp table ?
+
+      SELECT TOP 5  *
+      FROM EMP 
+      
+ => display top 5 highest paid employees ?
+ 
+      SELECT TOP 5 *
+      FROM EMP
+      ORDER BY SAL DESC 
+
+ => display top 5 employees based on experience ?
+
+      SELECT TOP 5 *
+      FROM EMP 
+      ORDER BY HIREDATE ASC 
+
+ => display top 5 max salaries ?
+
+    SELECT DISTINCT TOP 5 SAL
+    FROM EMP 
+   ORDER BY SAL DESC
+
