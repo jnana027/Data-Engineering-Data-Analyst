@@ -1,0 +1,59 @@
+1- write a Query to get all the orders where customers name has "a" as second character and "d" as fourth character.
+from pyspark.sql.functions import col
+df2=df1.filter(col("Customer Name").like("_a_d%"))
+display(df2)
+
+2- write a Query to get all the orders placed in the month of dec 2020 .
+from pyspark.sql.functions import col
+df3=df1.filter(col("Order Date").between('2020-12-01','2020-12-31'))
+display(df3)
+
+
+3- write a query to get all the orders where ship_mode is neither in 'Standard Class' nor in 'First Class' and ship_date is after nov 2020.
+from pyspark.sql.functions import col, to_date,lit
+li=['Standard Class','First Class']
+filtered_df = df1.filter(~col("Ship Mode").isin(li) & (col("Ship Date") > to_date(lit("2020-11-30"))))
+display(filtered_df)
+
+
+4- write a query to get all the orders where customer name neither start with "A" and nor ends with "n".
+from pyspark.sql.functions import col
+df5=df1.filter(~col("Customer Name").like("A%n"))
+display(df5)
+
+5- write a query to get all the orders where profit is negative .
+from pyspark.sql.functions import col
+df6=df1.filter(col("Profit")<0)
+display(df6)
+
+6- write a query to get all the orders where either quantity is less than 3 or profit is 0.
+from pyspark.sql.functions import col
+df7=df1.filter((col("Quantity")<3) | (col("Profit")==0))
+display(df7)
+
+
+7- your manager handles the sales for South region and he wants you to create a report of all the orders in his region where some discount is provided to the customers .
+from pyspark.sql.functions import col
+df8=df1.filter((col("Region")=='South') & (col("Discount")>0))
+display(df8)
+
+
+8- write a query to find top 5 orders with highest sales in furniture category .
+from pyspark.sql.functions import desc,col
+df9=df1.filter(col("Category")=='Furniture')
+df10=df9.sort(col("Sales").desc()).limit(5)
+display(df10)
+
+
+9- write a query to find all the records in technology and furniture category for the orders placed in the year 2020 only .
+from pyspark.sql.functions import col/
+df11=df1.filter((col("Category").isin('Technology','Furniture')) & col("Order date").between('2020-01-01','2020-12-31')) 
+display(df11)
+
+10-write a query to find all the orders where order date is in year 2020 but ship date is in 2021 .
+from pyspark.sql.functions import year,col
+df12=df1.filter(
+    (year(col("Order Date")) == 2020) &
+    (year(col("Ship Date")) == 2021)
+)
+display(df12)
