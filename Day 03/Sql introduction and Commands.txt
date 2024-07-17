@@ -1,0 +1,357 @@
+SQL :- 
+---------
+ => SQL stands for structured query language.
+ => it is a language used to communicate with sql server. 
+ => user communicates with sql server by sending commands called queries.
+ => a query is a command/instruction/question given to sql server to perform some 
+      operation on db.
+ => SQL is originally introduced by IBM and initial name of this language was "SEQUEL"
+      and later it is renamed to SQL.
+ => SQL is common to all  rdbms.
+
+ => based on operations over db  SQL is categorized into following sublanguages.
+
+1.DDL  (DATA DEFINITION LANG) :
+ The DDL language contain the following commands " create, Alter, Drop, Truncate ".
+
+i. Create command :
+-This command is used for creating Database and table.
+
+         -Syntax for creating the table 
+             CREATE TABLE <TABNAME>
+                (
+                COLNAME     DATATYPE(SIZE),
+                COLNAME     DATATYPE(SIZE),
+              -----------------------------------
+                 ) 
+
+           Example :
+                   CREATE TABLE EMP
+                (
+                 EMPID      	 SMALLINT ,
+                 ENAME    	 VARCHAR(10),
+                 JOB           	 VARCHAR(10),
+                 SAL          	 SMALLMONEY,
+                 HIREDATE 	 DATE,
+                 DNO           	 TINYINT
+                 )
+
+
+         -Rules for creating a table in a Database:- 
+         -----------
+
+        1    tabname should start with alphabet
+        2    tabname should not contains spaces & special chars but allows _ , $ , #
+        3    tabname can be upto 128 chars
+        4    table can have 1024 columns 
+        5    no of rows unlimited 
+
+
+ii.Alter command :
+=> command used to modify the table structure
+=> using ALTER command we can
+  1   add columns
+  2   drop columns
+  3   modify a column
+               changing datatype
+               changing size
+
+ => Adding columns :- 
+ ------------------------
+  syn :- 
+    ALTER TABLE <TABNAME>
+          ADD   COLNAME  DATATYPE(SIZE)  , ---------
+
+  Ex :- 
+  => add column gender to emp table ?
+
+      ALTER TABLE EMP
+              ADD  GENDER  CHAR(1)
+
+     after adding by default the new column is filled with nulls , to insert
+     data into the new column use update command.
+
+     UPDATE EMP SET GENDER='M' WHERE EMPNO = 7369 
+
+
+=> Droping column :- 
+ -----------------------
+
+    ALTER TABLE <TABNAME>
+         DROP COLUMN  COL1,COL2,----
+
+ => drop column gender from emp table ?
+
+    ALTER TABLE EMP
+            DROP COLUMN GENDER 
+
+
+=> Modifying a column :- 
+-----------------------------
+
+   ALTER TABLE <TABNAME>
+       ALTER  COLUMN  <COLNAME>  DATATYPE(SIZE)
+ 
+Ex :- 
+
+ => change the datatype of sal to money ?
+ 
+     ALTER TABLE EMP
+            ALTER COLUMN  SAL  MONEY
+
+ => increase the size of ename to 20 ?
+
+  ALTER TABLE EMP
+       ALTER COLUMN ENAME  VARCHAR(20) 
+
+
+iii. DROP command :- 
+  ---------------------------
+
+  => command used to drop table from database.
+  => drops table structure along with data.
+
+  syn :-  DROP TABLE  <TABNAME>
+
+  ex  :-   DROP TABLE EMP 
+
+
+iv. TRUNCATE command :- 
+ ---------------------------------
+
+  => deletes all the data from table but keeps structure.
+  => will empty the table.
+  => releases memory allocated for table 
+
+   syn :-   TRUNCATE TABLE  <TABNAME>
+
+   ex  :-    TRUNCATE TABLE STUDENT 
+    
+
+2.DML (DATA MANIPULATION LANG) :
+=> all dml commands acts on table data.
+=> by default all dml commands are auto committed.
+=> to stop auto commit execute the following command
+
+         SET IMPLICIT_TRANSACTIONS ON 
+
+ => to save the operation execute COMMIT.
+ => to cancel the operation execute ROLLBACK.
+ =>The DML language contain the following commands "insert, update, delete, merge "
+
+i. INSERT command :
+ =>  "INSERT"  command is used to insert data (row) into table.
+  =>   we can  insert 
+ 
+    1  single row
+    2  multiple rows 
+single row :- 
+  ---------------
+
+      INSERT INTO <TABNAME>  VALUES(V1,V2,V3,-----)
+
+  Ex :- 
+
+    INSERT INTO EMP VALUES(100,'SACHIN','CLERK',5000,'2023-03-30',10)
+    INSERT INTO EMP VALUES(101,'RAVI','ANALYST',8000,GETDATE(),10)
+ 
+ multiple rows :- 
+ --------------------
+
+   INSERT INTO EMP VALUES(102,'AJAY','CLERK',4000,'2019-10-05',20) ,
+                                                (103,'VIJAY','MANAGER',9000,'2020-05-10',30)
+
+ INSERTING NULLS :-  
+ -----------------------------
+
+ => a NULL means blank or empty 
+ => it is not equal to 0 or space
+ => NULLS can be inserted in two ways 
+
+ method 1 :-  
+ --------------
+
+   INSERT INTO EMP  VALUES(104,'KUMAR',NULL,NULL,'2018-04-20',20)
+
+method 2 :- 
+----------------
+
+   INSERT INTO EMP(EMPID,ENAME,HIREDATE,DNO)
+                     VALUES(105,'SATISH',GETDATE(),30)
+
+   remaining two fields job,sal are filled with nulls
+
+ii.UPDATE command :- 
+ ---------------------------
+
+ => used to modify the table data.
+ => we can update all rows or specific rows
+ => we can update single column or multiple columns
+
+  syn :-  UPDATE <tabname>
+             SET colname = value , colname = value ,------------
+             [WHERE cond] 
+
+  ex :- 
+
+ => update all employees comm with 500 ?
+
+      UPDATE emp SET comm = 500 
+
+ => update employees comm with 500 whose comm = null ?
+ 
+      UPDATE emp SET comm = 500 WHERE comm IS NULL 
+
+ => update employees comm with null whose comm <> null ?
+
+      UPDATE emp SET comm = NULL  WHERE comm IS NOT NULL 
+
+iii.DELETE command :- 
+---------------------------
+
+ =>  command used to delete row/rows from table
+ =>  we can delete all rows or specific rows
+ 
+   syn :-    DELETE  FROM   TABNAME  [WHERE COND] 
+
+Ex :- 
+------
+
+  =>   delete employees joined in 1981 year ?
+ 
+        DELETE FROM EMP WHERE HIREDATE  LIKE '1981%' 
+
+  =>  delete employees working for 30th dept and working as salesman ?
+
+        DELETE FROM EMP WHERE DEPTNO = 30  AND JOB = 'SALESMAN' 
+
+iv.MERGE command :-
+---------------------------
+
+  => used to merge data into a table.
+ =>  merge is the combination of insert & update & delete.
+ =>  used to manage replicas.
+ =>  using merge command we can apply changes made to one table to another table.
+ =>  used in ETL applications 
+ 
+             E  => Extract
+             T  => Transform
+             L  =>  Load 
+
+syntax :- 
+ 
+ MERGE INTO <TARGET-TABLE>  AS  <ALIAS> 
+ USING <SOURCE-TABLE> AS <ALIAS>
+  ON  (CONDITION)
+ WHEN MATCHED THEN
+        UPDATE
+ WHEN NOT MATCHED THEN
+       INSERT
+ WHEN NOT MATCHED BY SOURCE THEN
+       DELETE ;
+
+Example :- 
+
+step 1 :-  create source table
+
+ CREATE TABLE custs 
+ ( 
+  cid  INT,cname VARCHAR(10),caddr  VARCHAR(10)
+ )
+
+ INSERT INTO custs VALUES(10,'A','HYD'),(11,'B','MUM')
+
+ CUSTS
+ CID	CNAME	CADDR
+ 10	A	HYD
+ 11	B	MUM
+
+ step 2 :-  create replica
+
+ SELECT * INTO CUSTT FROM CUSTS 
+
+ CUSTT
+ CID	CNAME	CADDR
+ 10	A	HYD
+ 11	B	MUM
+
+step 3 :- make changes to source table
+ 
+ INSERT INTO CUSTS VALUES(12,'C','DEL')
+
+ UPDATE CUSTS SET CADDR='BLR' WHERE CID=10
+
+ CUSTS
+ CID	CNAME	CADDR
+ 10	A	BLR  => UPDATED
+ 11	B	MUM
+ 12	C	DEL => INSERTED
+
+step 4 :- apply changes to target table using merge command
+
+ MERGE INTO CUSTT AS T
+ USING CUSTS AS S
+ ON (S.CID = T.CID)
+ WHEN MATCHED THEN
+       UPDATE  SET  T.CADDR = S.CADDR 
+  WHEN NOT MATCHED THEN
+        INSERT VALUES (S.CID,S.CNAME,S.CADDR) 
+  WHEN NOT MATCHED BY SOURCE THEN
+        DELETE ; 
+
+
+
+3.DQL (DATA QUERY LANG) :
+=> The DQL language contain the following commands "select"
+=>"SELECT"  command is used to display data from table.
+ => we can display all rows or specific rows.
+ => we can display all columns or specific columns.
+
+  syn :-  SELECT  COLUMNS /  *   FROM TABNAME
+
+   =>  display  employee names and salaries ?
+
+         SELECT    ENAME,SAL   FROM  EMP        
+
+   => display  names,salaries and hiredates ?
+ 
+       SELECT  ENAME,SAL,HIREDATE FROM EMP 
+
+   => display all the data from emp table ?
+
+       SELECT  *  FROM EMP
+
+4.TCL  (TRANSACTION CONTROL LANG) :
+=> The TCL language contain the following commands "commit, Rollback, Save, Transaction".
+
+5.DCL (DATA CONTROL LANG) :
+=> The DCL language contain the following commands "grant,Revoke"
+
+
+
+
+****************************************************************************************************************************
+creating a new table from existing table (replica)   :- 
+ --------------------------------------------------------------
+
+ SELECT COLUMNS  INTO  <NEW-TABNAME> 
+ FROM <OLD-TABNAME>
+ WHERE COND
+
+ Example  1   :- (copying complete table)
+
+ SELECT * INTO EMP22  FROM EMP
+
+example 2 :-   copying specific rows & columns
+
+ SELECT EMPNO,ENAME,JOB,SAL  INTO  EMP33
+ FROM EMP
+ WHERE JOB IN ('CLERK','MANAGER') 
+
+ example 3 :- copy only columns (structure) but not rows (data)
+
+ SELECT * INTO EMP44
+ FROM EMP 
+ WHERE 1=2 
+
+*******************************************************************************************************************************
