@@ -1,3 +1,10 @@
+df1=spark.read.format("csv")\
+             .option("header",True)\
+             .option("inferSchema",True)\
+             .option("mode","PERMISSIVE")\
+             .option("delimiter",",")\
+             .load("dbfs:/FileStore/tables/CSV/orders.csv") 
+
 1- write a Query to get all the orders where customers name has "a" as second character and "d" as fourth character.
 from pyspark.sql.functions import col
 df2=df1.filter(col("Customer Name").like("_a_d%"))
