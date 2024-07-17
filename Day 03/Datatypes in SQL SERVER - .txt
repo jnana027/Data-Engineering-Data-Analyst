@@ -1,0 +1,200 @@
+Datatypes in SQL SERVER :- 
+---------------------------------------
+
+=>  a  Datatype specifies
+
+   1  type of the data allowed
+   2  amount of memory allocated
+
+  CHARACTER  types :- 
+  ----------------------------
+
+                              ASCII                                        UNICODE
+
+                             char			nchar
+                             varchar                                       nvarchar
+                             varchar(max)                              nvarchar(max)
+
+           ASCII   => american standard code for information interchange
+
+ char :- 
+ --------
+     
+ => allows character data upto 8000 chars
+ => recommended for fixed length char columns 
+
+    ex :-   NAME    CHAR(10)
+
+              sachin---- 
+                        wasted
+
+              ravi------
+                       wasted
+
+   => in char datatype extra bytes are wasted , so char is not recommended
+        for variable length fields and it is recommended for fixed length fields.
+
+               GENDER    CHAR(1)
+ 
+                M
+                F
+
+	STATE_CODE	CHAR(2)
+
+	AP
+                TS
+                MH
+
+	COUNTRY_CODE	 CHAR(3)
+
+	IND
+	USA
+                ENG
+ 
+ VARCHAR :- 
+ -----------------
+
+  => varchar allows character data upto 8000 chars
+  => recommended for variable length fields.
+
+       ex :-    NAME	  VARCHAR(10)
+
+                  sachin----
+                               released
+
+ => in varchar extra bytes are released
+
+ VARCHAR(MAX) :- 
+ -------------------------
+
+ => allows character data upto 2GB.
+
+                       
+   1 TB = 1024 GB
+   1 GB = 1024 MB
+   1 MB = 1024 KB
+   1 KB = 1024 BYES 
+
+ 2*1024*1024*1024 BYTES
+
+=> char/varchar/varchar(max) allows  ascii chars (256 chars) that includes
+     a-z,A-Z,0-9,special chars.
+
+            ex :-    PANNO      CHAR(10)
+                       VEHNO     CHAR(10)
+                       EMAILID    VARCHAR(20)
+  
+NCHAR/NVARCHAR/NVARCHAR(MAX) :- 
+-------------------------------------------------------
+
+=>  allows unicode chars (65536 ) that includes all ascii and chars belongs to
+      different languages.
+
+ Integer Types :- 
+ --------------------
+
+ => allows  numbers  without  decimal part
+
+      TINYINT	 1 BYTE		0 TO 255
+      SMALLINT	 2 BYTES                -32768 TO 32767
+      INT		 4 BYTES	               -2147483648 to 2147483647
+      BIGINT	 8 BYTES                -9223372036854775808 to 9223372036854775807
+ 
+        ex :- 
+                    AGE    		TINYINT
+                    EMPID		SMALLINT
+	    ACCNO	BIGINT
+
+ NUMERIC(P) :- 
+ --------------------
+
+  => allows numbers without decimal part.
+  => use this datatype when value is based on number of digits
+  => allows  numbers upto 38 digits
+
+      ex :-      empid    NUMERIC(4)
+
+                    10         VALID
+                    100       VALID
+                   1000      VALID
+                   10000    INVALID
+
+                    PHONE    	NUMERIC(10)
+                    ACCNO    	NUMERIC(11)
+                    AADHARNO	NUMERIC(12)
+                    
+ NUMERIC(P,S) / DECIMAL(P,S) :- 
+ ---------------------------------------------
+
+ => allows numbers with decimal part ( float)
+
+    P  => precision => total no of digits allowed
+    S  => scale       => no of digits allowed after decimal
+
+    ex :-      SALARY      NUMERIC(7,2)
+
+                 5000           VALID
+                 5000.55	    VALID
+                50000.55      VALID
+               500000.50     INVALID
+
+                   5000.507   VALID  => 5000.51
+                   5000.503   VALID  => 5000.50
+
+ NOTE :-   if before decimal exceeds number is not accepted
+                 if after decimal exceeds number is rounded
+ 
+ CURRENCY types :- 
+ ----------------------------
+
+ =>  currency types are used for fields related to money
+
+       SMALLMONEY	  4 BYTES      -2,14,748.3648 to 2,14,748.3647	
+       MONEY	  8 BYTES      -922337203685477.5808 to 922337203685477.5807
+
+
+   EX :-    SALARY    	SMALLMONEY
+               BALANCE		MONEY
+               AMOUNT		SMALLMONEY
+               PRICE		SMALLMONEY
+
+30-mar-23
+
+ DATE & TIME :-  
+ --------------------
+
+ 1   DATE                  =>   allows only date
+ 2   TIME                   =>   allows only time
+ 3   DATETIME          =>   allows date & time
+
+ =>  default date format in sql server is YYYY-MM-DD
+ =>  default time format is HH:MI:SS
+
+   EX :-       HIREDATE        DATE
+
+                  2023-03-30
+ 
+                  LOGIN             TIME       
+
+                  10:00:00
+
+                   TXNDT            DATETIME
+
+	   2023-03-30 11:00:00
+
+ Binary Types :-  
+ ---------------------
+
+ => Binary types are used for storing multimedia objects like  audio,video,images
+
+     1   binary                   =>  allows upto 8000 bytes
+     2   varbinary              =>  allows upto 8000 bytes 
+     3   varbinary(max)     =>  allows upto 2GB
+
+  =>  in binary extra bytes are wasted but in varbinary extra bytes are released
+
+       ex :-    photo    binary(1000)
+                
+                  photo    varbinary(1000)
+
+                  video    varbinary(max) 
