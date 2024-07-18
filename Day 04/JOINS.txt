@@ -1,0 +1,678 @@
+JOINS
+				---------
+
+    
+ =>  join is an operation performed to display data from two or more tables.
+
+ => in DBs related data stored in multiple tables , to gather or to combine data
+      stored in multiple tables  we need to join those tables.
+
+ Example :- 
+
+    orders                                                  customers
+    ordid      orddt    deldt       cid                cid      name         addr
+    1000      ??         ??         10                 10        A              HYD
+    1001                                11                 11        B              HYD
+     1002                               12                 12        C             HYD
+
+   output :- 
+ 
+    ordid    orddt    deldt     name    addr 
+    1000    ??        ??        A           HYD
+
+ Types of Joins :- 
+ --------------------
+
+ 1  INNER JOIN / EQUI JOIN
+ 2  OUTER JOIN
+        LEFT OUTER
+        RIGHT OUTER
+        FULL OUTER
+ 3  NON EQUI JOIN
+ 4  SELF JOIN
+ 5  CROSS / CARTESIAN JOIN
+
+ INNER JOIN / EQUI JOIN :-  
+ ------------------------------------
+
+  =>  to perform inner join between the two tables there must be a common field and 
+        name of the common field need not to be same and pk-fk relationship is not compulsory
+
+  => inner join is performed based on the common field with same datatype.
+
+       SELECT columns
+       FROM  tab1  INNER JOIN tab2 
+           ON   join condition 
+
+ join condition :- 
+ --------------------
+
+=>  based on the given join condition sql server joins the records of two tables.
+=>  join condition determines which record of 1st table joined with which record of 2nd table.
+
+             table1.commonfield =  table2.commonfield
+
+  
+ Example :- 
+
+ EMP					DEPT
+ EMPNO	ENAME	SAL	DEPTNO		DEPTNO	DNAME		LOC
+  1	A	5000	10		10	ACCOUNTS	NY	
+  2	B	3000	20		20	RESEARCH		
+  3	C	4000	30		30	SALES	
+  4	D	3000	10		40	OPERATIONS	
+  5	E	2000	NULL
+
+  =>  display     ENAME      SAL       DNAME     LOC    ?
+                        --------------------       ----------------------
+                               EMP                    DEPT
+
+        SELECT  ENAME,SAL,DNAME,LOC
+            FROM EMP INNER JOIN DEPT
+                ON  EMP.DEPTNO = DEPT.DEPTNO 
+
+ => display    ENAME  SAL   DEPTNO   DNAME   LOC   ?
+
+       SELECT  ENAME,SAL,
+                      DEPTNO ,DNAME,LOC
+            FROM EMP INNER JOIN DEPT
+                ON  EMP.DEPTNO = DEPT.DEPTNO   => ERROR (ambiguity)
+
+     NOTE :-  
+ 
+      in join queries  declare table alias and prefix column names with table alias for two reasons
+
+     1  to avoid ambiguity error
+     2  for faster execution
+
+    SELECT   E.ENAME,E.SAL,
+                    D.DEPTNO ,D.DNAME,D.LOC
+        FROM EMP AS E INNER JOIN DEPT AS D
+             ON  E.DEPTNO = D.DEPTNO
+      
+    => display employees working at NEW YORK loc ?
+
+         SELECT E.ENAME,D.DNAME,D.LOC
+            FROM EMP AS E INNER JOIN DEPT AS  D 
+                ON  E.DEPTNO = D.DEPTNO    /* join condition */
+            WHERE D.LOC = 'NEW YORK'     /*  filter condition */
+
+  joining more than 2 tables :- 
+  --------------------------------------
+
+  => if no of tables increases no of join conditions also increases. 
+  => to join N tables N-1 join conditions required.
+
+    SELECT  columns
+       FROM  tab1 INNER JOIN tab2
+            ON   join condition
+                           INNER JOIN tab3
+             ON  join condition
+                           -------------------
+
+ ex :- 
+ 
+  EMP             DEPT               LOCATIONS            COUNTRIES
+  empno          deptno              locid                         country_id
+  ename          dname              city                           country_name
+  sal                locid                  state                         
+  deptno                                   country_id 
+  
+ => display    ENAME    DNAME     CITY    STATE    COUNTRY_NAME  ?
+                     ----------    -----------     ------------------    --------------------------
+                     EMP        DEPT         LOCATIONS        COUNTRIES
+
+     SELECT   e.ename,
+                     d.dname,      
+                     l.city,l.state,
+                     c.country_name as country
+     FROM emp as e INNER JOIN dept as d
+           ON e.deptno = d.deptno 
+                                INNER JOIN locations as l
+           ON d.locid  =  l.locid
+                                INNER JOIN countries as c
+           ON l.country_id = c.country_id 
+
+ OUTER JOIN :- 
+ ---------------------
+
+=>  inner join returns only matching records but won't return unmatched records , 
+      to display unmatched records perform outer join.
+
+example :-
+
+ EMP					DEPT
+ EMPNO	ENAME	SAL	DEPTNO		DEPTNO	DNAME		LOC
+  1	A	5000	10		10	ACCOUNTS	NY	
+  2	B	3000	20		20	RESEARCH		
+  3	C	4000	30		30	SALES	
+  4	D	3000	10		40	OPERATIONS => unmatched row
+  5	E	2000	NULL =>  unmatched row
+
+ 
+ => outer join is 3 types 
+
+   1  LEFT JOIN
+   2  RIGHT JOIN
+   3  FULL JOIN
+
+   LEFT JOIN :- 
+   ------------------
+
+  =>  returns all rows from left side table and matching rows from right side table.
+
+       SELECT  E.ENAME,D.DNAME
+          FROM  EMP AS E  LEFT JOIN DEPT AS D
+               ON  E.DEPTNO = D.DEPTNO
+
+     => returns all rows from emp table and matching rows from dept table
+
+       A	ACCOUNTS
+       B	RESEARCH
+       C	SALES
+       D	ACCOUNTS
+       E	NULL                => unmatched row from emp 
+
+ RIGHT JOIN :- 
+ ---------------------
+
+  => returns all rows from right side table and matching rows from left side table
+
+       SELECT  E.ENAME,D.DNAME
+          FROM  EMP AS E  RIGHT JOIN DEPT AS D
+               ON  E.DEPTNO = D.DEPTNO
+
+  => returns all rows from dept table and matching rows from emp table
+
+ 	A	ACCOUNTS
+	B	RESEARCH
+	C	SALES
+	D	ACCOUNTS
+	NULL	OPERATIONS => unmatched from dept 
+
+ FULL JOIN :- 
+ ------------------
+
+  => full join returns all rows from both tables 
+
+       SELECT  E.ENAME,D.DNAME
+          FROM  EMP AS E  FULL JOIN DEPT AS D
+               ON  E.DEPTNO = D.DEPTNO
+
+	A	ACCOUNTS
+	B	RESEARCH
+	C	SALES
+	D	ACCOUNTS
+ 	E	NULL        => unmatched from emp	
+                NULL	OPERATIONS => unmatched from dept
+
+ Displaying unmatched records :-
+ ---------------------------------------------
+
+ left table :- 
+ ---------------
+
+       SELECT  E.ENAME,D.DNAME
+          FROM  EMP AS E  LEFT JOIN DEPT AS D
+               ON  E.DEPTNO = D.DEPTNO
+        WHERE D.DNAME IS NULL 
+
+            E      NULL
+
+ right table :- 
+ ----------------
+ 
+       SELECT  E.ENAME,D.DNAME
+          FROM  EMP AS E RIGHT JOIN DEPT AS D
+              ON  E.DEPTNO = D.DEPTNO
+        WHERE  E.ENAME IS NULL
+
+      NULL	   OPERATIONS 
+
+ both tables :- 
+ ------------------
+
+       SELECT  E.ENAME,D.DNAME
+          FROM  EMP AS E FULL JOIN DEPT AS D
+               ON  E.DEPTNO = D.DEPTNO
+        WHERE E.ENAME IS NULL 
+	      OR
+	      D.DNAME IS NULL
+
+       E        	NULL
+      NULL   	OPERATIONS
+
+scenario :- 
+---------------
+
+  PROJECTS
+  projid     pname   duration 
+ 100        A             5 YEARS
+ 101        B            3 YEARS
+ 102        C            2  YEARS 
+ 
+  EMP
+  EMPNO	 ENAME	PROJID
+  1	 K	100
+  2	 M	101
+  3	 C	NULL
+
+ => display employee details with project details ?
+
+ => display employee details with project details and also display
+      employees not assigned to any project ?
+
+ => display employee details with project details and also display
+      projects where no employee assigned to it ?
+
+Non Equi Join :- 
+---------------------
+
+ =>  Non equi join is performed between the tables not sharing a common field
+ 
+     SELECT columns
+     FROM tab1  JOIN  tab2 
+         ON  join condition
+
+ => here join condition is not based on "=" operator  and may be based on 
+      >   <    between operators.
+
+     Example :-
+
+      EMP				SALGRADE
+      EMPNO    ENAME   SAL		GRADE	LOSAL	HISAL
+      1	       A             3000		1	700	1000
+      2               B             1000		2	1001	2000
+      3               C             4000		3	2001	3000
+      4               D             2000		4	3001	4000
+      5               E             1500		5	4001	9999
+
+    display  ENAME	SAL	GRADE  ?
+                 -------------------         ------------
+                         EMP                 SALGRADE
+
+      SELECT  E.ENAME,E.SAL,S.GRADE
+         FROM  EMP AS E  JOIN SALGRADE AS S
+             ON   E.SAL BETWEEN S.LOSAL AND S.HISAL 
+
+ 	A	3000	3
+	B	1000	1
+	C	4000	4
+	D	2000	2
+	E	1500	2
+
+ => display grade 4 employee list ?
+
+      SELECT  E.ENAME,E.SAL,S.GRADE
+         FROM  EMP AS E  JOIN SALGRADE AS S
+             ON   E.SAL BETWEEN S.LOSAL AND S.HISAL 
+       WHERE  S.GRADE = 4 
+
+ => display  ENAME    DNAME     GRADE    ?
+                   ----------    -----------     ----------
+                     EMP        DEPT        SALGRADE
+
+   SELECT E.ENAME,D.DNAME,S.GRADE
+       FROM EMP AS E  INNER JOIN DEPT AS D
+           ON  E.DEPTNO = D.DEPTNO
+                                     JOIN SALGRADE S
+            ON E.SAL  BETWEEN S.LOSAL AND S.HISAL 
+
+ SELF JOIN :- 
+ ------------------
+
+  => joining a table to itself is called self join.
+  => in self join a record in one table joined with another record of same table.
+  => to perform self join the same table must be declared two times with
+       different alias.
+
+           FROM  EMP AS  X   JOIN   EMP AS  Y
+
+ Example :- 
+
+   EMP X				  	EMP Y	
+   EMPNO       ENAME	MGR		EMPNO	ENAME	MGR
+   1	     A		NULL		1	A	NULL
+   2	     BLAKE	1		2	BLAKE	1
+   3	     C		1		3	C	1
+   4	     D		2		4	D	2
+   5	     E		3		5	E	3
+
+
+=> display  ENAME	    MGRNAME   ?
+
+      SELECT  X.ENAME , Y.ENAME AS MANAGER
+      FROM EMP AS X   JOIN  EMP AS Y
+           ON  X.MGR = Y.EMPNO
+
+             B            A
+             C           A
+             D           B
+             E           C
+
+ => display employees reporting to blake ?
+
+       SELECT  X.ENAME , Y.ENAME AS MANAGER
+          FROM  EMP AS X   JOIN  EMP AS Y
+               ON  X.MGR = Y.EMPNO
+        WHERE Y.ENAME='BLAKE' 
+
+  => display blake's manager name ?
+
+       SELECT  X.ENAME , Y.ENAME AS MANAGER
+          FROM  EMP AS X   JOIN  EMP AS Y
+               ON  X.MGR = Y.EMPNO
+       WHERE  X.ENAME='BLAKE' 
+
+ => employees earning more than their manager ?
+
+     SELECT  X.ENAME ,X.SAL,
+                    Y.ENAME AS MANAGER,Y.SAL AS MGRSAL
+         FROM  EMP AS X   JOIN  EMP AS Y
+              ON  X.MGR = Y.EMPNO
+      WHERE  X.SAL > Y.SAL
+
+ => employees joined before their manager ?
+
+      SELECT  X.ENAME ,X.HIREDATE, 
+                      Y.ENAME AS MANAGER ,Y.HIREDATE AS MGRHIRE
+         FROM  EMP AS X   JOIN  EMP AS Y
+             ON  X.MGR = Y.EMPNO
+      WHERE X.HIREDATE  < Y.HIREDATE  
+
+ Question :-
+  -------------
+
+    TEAMS
+    ID	COUNTRY
+    1	IND
+    2	AUS
+    3	ENG
+
+   write a query to display following output ?
+ 
+   IND  VS   AUS
+   IND  VS   ENG
+   AUS  VS  ENG
+
+     TEAMS A                                 TEAMS B
+    ID	COUNTRY                    ID	COUNTRY
+    1	IND		     1	IND
+    2	AUS		     2	AUS
+    3	ENG		     3	ENG
+
+  
+CROSS JOIN / CARTESIAN JOIN :- 
+-----------------------------------------------
+
+ =>  cross join returns cross product or cartesian product of two tables.
+ 
+    A = 1,2
+    B = 3,4
+   AXB = (1,3) (1,4) (2,3) (2,4)
+  
+  => if cross join performed between two tables then all the records of 
+       1st table joined with all the records of 2nd table.
+
+   => to perform cross join submit the join query without join condition.
+
+     SELECT  E.ENAME,D.DNAME
+         FROM  EMP AS E  CROSS JOIN DEPT AS D
+
+GROUP BY & JOIN :-
+-----------------------------
+
+  =>  display dept wise total sal ?  display dept names ?
+
+       SELECT D.DNAME,SUM(E.SAL) AS TOTSAL
+          FROM EMP AS E  INNER JOIN DEPT AS D
+               ON  E.DEPTNO = D.DEPTNO 
+    GROUP BY D.DNAME
+
+ FROM EMP AS E INNER JOIN DEPT AS D :-
+--------------------------------------------------------------
+
+   EMP					DEPT
+ EMPNO	ENAME	SAL	DEPTNO		DEPTNO	DNAME		LOC
+  1	A	5000	10		10	ACCOUNTS	NY	
+  2	B	3000	20		20	RESEARCH		
+  3	C	4000	30		30	SALES	
+  4	D	3000	10		40	OPERATIONS  
+  5	E	2000	20
+
+ON E.DEPTNO = D.DEPTNO :-
+------------------------------------------
+
+  1	A	5000	ACCOUNTS
+  2	B	3000	RESEARCH
+  3	C	4000	SALES
+  4	D	3000	ACCOUNTS
+  5	E	2000	RESEARCH
+
+GROUP BY D.DNAME :- 
+--------------------------------
+
+   ACCOUNTS
+		1	A	5000
+		4	D	3000
+
+  RESEARCH
+		2	B	3000
+		5	E	2000
+
+   SALES	
+		3	C	4000
+
+   SELECT D.DNAME,SUM(E.SAL) AS TOTSAL :- 
+   ----------------------------------------------------------------
+ 
+   ACCOUNTS	8000
+   RESEARCH	5000
+   SALES		4000
+
+ Assignment :- 
+ --------------------
+
+ SALES
+ DATEID	 	PRODID	  CUSTID	  QTY	AMT
+ 2020-01-01	100	  10	   1	2000
+ 
+ PRODUCTS
+ PRODID	 PNAME	 PRICE	CATEGORY
+ 100	 AAA         2000        ELECTRONICS
+
+ CUSTOMER
+ CUSTID	 NAME	ADDR	COUNTRY
+ 10	 KKK	HYD	IND
+
+  => display year wise total amount ?
+  => display category wise total amount ?
+  => display country wise total amount ? 
+  => display year wise,country wise,category wise total amount ?
+
+================================================================
+
+ SET OPERATORS :- 
+ ---------------------------
+
+ UNION
+ UNION ALL
+ INTERSECT
+ EXCEPT
+
+ A                =   1,2,3,4
+ B                =   1,2,5,6
+
+  A UNION B 	=   1,2,3,4,5,6
+ A  UNION ALL B      =   1,2,3,4,1,2,5,6
+ A  INTERSECT B     =   1,2
+ A  EXCEPT B           =   3,4
+ B  EXCEPT A          =    5,6
+
+ => in SQL SERVER  set operations are performed between records return by two queries
+
+   SELECT  STATEMENT 1
+   UNION / UNION ALL / INTERSECT / EXCEPT 
+   SELECT STATEMENT 2
+ 
+  Rules :- 
+ 
+  1  no of columns return by both queries must be same.
+  2  corresponding columns datatype must be same.
+
+ SELECT job FROM emp WHERE deptno = 20
+
+CLERK
+MANAGER
+ANALYST
+CLERK
+ANALYST
+
+ SELECT job FROM emp WHERE deptno = 30
+
+SALESMAN
+SALESMAN
+SALESMAN
+MANAGER
+SALESMAN
+CLERK
+
+ UNION :- 
+ ------------
+
+ =>  combines rows return by two queries
+ =>  duplicates are eliminated
+ =>  result is sorted 
+
+    SELECT job FROM emp WHERE deptno = 20 
+    UNION
+    SELECT job FROM emp WHERE deptno = 30
+
+ ANALYST 
+CLERK
+MANAGER
+SALESMAN
+
+27-apr-23
+
+ => difference between  UNION & JOIN ?
+
+                    UNION                                        JOIN 
+
+   1    combines rows                                      combines columns 
+
+   2    horizontal merge                                    vertical merge
+
+   3    performed between                                performed between
+         two similar structures                             two dissimilar structures
+
+  T1       T2
+  F1       C1
+  1         10
+  2         20
+  3         30
+
+ T1 UNION T2 :-                    T1 JOIN T2  :- 
+ ---------------------                   ----------------
+
+ 1			1	10
+ 2			2	20
+ 3			3	30
+ 10
+ 20
+ 30
+
+scenario :-
+--------------
+
+EMP_US
+ENO  ENAME  SAL   DNO
+                                                                       DEPT
+EMP_IND                                                        DNO  DNAME   LOC
+ENO  ENAME  SAL    DNO
+
+ =>  total employee list ?
+
+      SELECT * FROM EMP_US
+      UNION
+      SELECT * FROM EMP_IND 
+
+ => employees working at us loc with dept details ?
+ 
+        SELECT E.*,D.*
+           FROM EMP_US AS E INNER JOIN DEPT AS D
+              ON E.DNO = D.DNO 
+ 
+ => total employees with dept details ?
+ 
+        SELECT E.*,D.*
+           FROM EMP_US AS E INNER JOIN DEPT AS D
+              ON E.DNO = D.DNO 
+        UNION
+        SELECT E.*,D.*
+           FROM EMP_IND AS E INNER JOIN DEPT AS D
+              ON E.DNO = D.DNO 
+
+UNION ALL :- 
+------------------
+
+ => union all combines rows return by two queries
+ => duplicates are not eliminated
+ => result is not sorted 
+
+    SELECT job FROM emp WHERE deptno = 20 
+    UNION ALL
+    SELECT job FROM emp WHERE deptno = 30
+
+	CLERK
+	MANAGER
+	ANALYST
+	CLERK
+	ANALYST
+	SALESMAN
+	SALESMAN
+	SALESMAN
+	MANAGER
+	SALESMAN
+	CLERK
+
+ => difference between union & union all ?
+
+            UNION                                UNION ALL
+ 
+  1      duplicates are eliminated      duplicates are not eliminated
+
+  2      result is sorted                     result is not sorted
+ 
+  3      slower                                  faster
+
+ INTERSECT :- 
+ ------------------
+
+  => returns common values 
+
+    SELECT job FROM emp WHERE deptno = 20 
+    INTERSECT
+    SELECT job FROM emp WHERE deptno = 30
+   
+    CLERK
+    MANAGER
+
+ EXCEPT :- 
+ ---------------
+
+ => returns values present in 1st query output and not present in 2nd query
+      output
+
+     SELECT job FROM emp WHERE deptno = 20 
+     EXCEPT
+     SELECT job FROM emp WHERE deptno = 30
+
+     ANALYST
+
+     SELECT job FROM emp WHERE deptno = 30 
+     EXCEPT
+     SELECT job FROM emp WHERE deptno = 20
+   
+     SALESMAN 
+

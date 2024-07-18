@@ -1,0 +1,989 @@
+ Built-in Functions in SQL SERVER :- 
+ ------------------------------------------------
+
+ => a function accepts some input performs some calculation and
+      returns one value.
+
+Types of functions :- 
+ -------------------------
+
+  1  DATE
+  2  STRING
+  3  NUMERIC
+  4  CONVERSION
+  5  SPECIAL
+  6  ANALYTICAL
+  7  AGGREGATE
+
+DATE functions :- 
+  ------------------------
+  GETDATE() :- 
+  -----------------
+
+   => returns current date & time
+
+      SELECT GETDATE()  => 2023-04-07 16:34:34.510
+                                             ---------------  ----------  -----
+                                                  DATE       TIME     MS
+
+DATEPART() :- 
+ --------------------
+
+  => used to extract part of the date.
+
+             DATEPART(interval,date)
+
+   ex :- 
+
+             SELECT  DATEPART(YY,GETDATE())    =>   2023
+                                               MM                       =>   04
+                                               DD                        =>   07
+                                               DW                       =>   06 (DAY OF THE WEEK)
+
+                                                                                   1  SUNDAY
+                                                                                   2  MONDAY
+
+                                                                                   7  SATURDAY
+                                               Q                          =>   2  (QUARTER)  
+                                              
+                                                                                  JAN-MAR    1
+                                                                                  APR-JUN     2
+                                                                                  JUL-SEP     3
+                                                                                  OCT-DEC    4
+
+                                               HH                        =>  hour part
+                                               MI                         =>  minutes
+                                               SS                        =>  seconds
+                                               DAYOFYEAR        =>  97
+                                               WW                      =>  14
+
+ => employees joined in 1980,1983,1985 ?
+
+     SELECT *
+     FROM EMP
+     WHERE HIREDATE LIKE '1980%'
+                    OR
+	   HIREDATE LIKE '1983%'
+	    OR
+	   HIREDATE LIKE '1985%'
+
+    SELECT *
+    FROM EMP
+    WHERE DATEPART(YY,HIREDATE)   IN (1980,1983,1985)
+
+ => employees joined in leap year ?
+
+     condition :-     year%4=0
+
+     SELECT *
+     FROM EMP
+     WHERE  DATEPART(yy,HIREDATE)%4=0
+
+ => employees joined between  jan and apr ?
+
+     SELECT *
+     FROM EMP
+     WHERE  DATEPART(mm,HIRERDATE)  BETWEEN 1 AND 4 
+
+=> employees joined on sunday ?
+
+     SELECT *
+     FROM EMP
+     WHERE  DATEPART(DW,HIREDATE) = 1 
+
+=> employees joined in 2nd quarter of 1981 year ?
+ 
+    SELECT *
+    FROM EMP
+    WHERE DATEPART(yy,HIREDATE) = 1981
+                  AND
+                  DATEPART(q,HIREDATE) = 2 
+
+  DATENAME() :- 
+  ---------------------
+
+  => similar to datepart used to extract part of the date.
+ 
+  		   MM		DW
+
+        DATEPART         4 		6
+
+  
+       DATENAME        APRIL		FRIDAY
+
+ 
+   => display   ENAME        DAY OF THE WEEK   ? 
+
+                      
+     SELECT  ENAME,DATENAME(DW,HIREDATE) AS DAY
+     FROM EMP 
+
+   => write a query to display on which day india got independence ?
+
+        SELECT DATENAME(DW,'1947-08-15')   =>  Friday
+
+  DATEDIFF() :- 
+  --------------------
+
+ => used to calculate difference between two dates 
+
+          DATEDIFF(interval,start date,end date)
+
+   ex :-  
+
+     SELECT  DATEDIFF(yy,'2022-04-07',getdate())    =>  1
+     SELECT  DATEDIFF(mm,'2022-04-07',getdate())  =>  12
+     SELECT  DATEDIFF(dd,'2022-04-07',getdate())    =>  365
+      
+  => display  ENAME    EXPERIENCE  in years ?
+
+      SELECT ENAME,
+                    DATEDIFF(yy,HIREDATE,GETDATE()) as EXPERIENCE
+     FROM EMP 
+
+=> display  ENAME    EXPERIENCE  ?
+                                     M YEARS N MONTHS 
+
+          experience = 40 months = 3 YEARS 4 MONTHS 
+
+          years    =  months/12 = 40/12  = 3     years
+          months =  months%12 = 40%12 = 4  months
+
+         SELECT ENAME,
+                       DATEDIFF(MM,HIREDATE,GETDATE())/12 AS YEARS,
+                       DATEDIFF(MM,HIREDATE,GETDATE())%12 AS MONTH 
+         FROM EMP 
+
+  FORMAT() :- 
+  ----------------
+
+  => used to display dates in different formats 
+
+          FORMAT(DATE,'FORMAT')
+
+ ex :- 
+
+1   SELECT FORMAT(GETDATE(),'MM/dd/yyyy')   =>  04/08/2023
+
+2   SELECT FORMAT(GETDATE(),'MM/dd/yyyy hh:mm:ss') => 04/08/2023 04:38:20
+
+=> display  ENAME    HIREDATE    ?
+     display hriedates in DD-MM-YYYY ?
+
+    SELECT ENAME,
+                  FORMAT(HIREDATE,'dd-MM-yyyy') AS HIREDATE
+    FROM EMP 
+
+ scenario :- 
+ --------------
+
+  INSERT INTO EMP(EMPNO,ENAME,JOB,SAL,HIREDATE)
+                 VALUES(100,'ABC','CLERK',4000,GETDATE())
+
+ => display list of employees joined today ?
+
+     SELECT * 
+     FROM EMP 
+     WHERE HIREDATE =  GETDATE()     =>  NO ROWS 
+ 
+                   2023-04-08  =  2023-04-08 16:54:20.123
+
+   "="  comparision with GETDATE() always fails  because date compared
+    with date & time.  To overcome this problem use FORMAT function
+
+  SELECT *
+  FROM EMP
+  WHERE  HIREDATE = FORMAT(GETDATE(),'yyyy-MM-dd')
+
+ DATEADD() :- 
+ -----------------
+
+ => used to add days,months,years to a date 
+ => can also be used to subtract
+
+      DATEADD(interval,number,date)
+
+ ex :-  
+
+   1    SELECT  DATEADD(DD,10,GETDATE())   => 2023-04-18
+   2   SELECT   DATEADD(MM,6,GETDATE())   => 2023-10-8
+   3   SELECT   DATEADD(MM,-2,GETDATE())  => 2023-02-08
+
+ scenario :- 
+ --------------
+
+ GOLD_RATES
+ DATEID		RATE
+ 2020-01-01	?
+ 2020-01-02	?
+
+ 2023-04-08	?
+
+ 
+1  display today's gold rate ?
+2  display yesterday's gold rate ?
+3  display last month same day gold rate ?
+4  display last year same day gold rate ?
+
+ 
+1  SELECT  RATE 
+    FROM GOLD_RATES
+    WHERE DATEID =  FORMAT(GETDATE(),'yyyy-MM-dd')
+
+ 2  SELECT  RATE 
+     FROM GOLD_RATES
+     WHERE DATEID = DATEADD(DD,-1,FORMAT(GETDATE(),'yyyy-MM-dd'))
+
+3   SELECT  RATE 
+     FROM GOLD_RATES
+     WHERE DATEID = DATEADD(MM,-1,FORMAT(GETDATE(),'yyyy-MM-dd'))
+
+ 4  SELECT  RATE 
+     FROM GOLD_RATES
+     WHERE DATEID = DATEADD(YY,-1,FORMAT(GETDATE(),'yyyy-MM-dd'))
+
+ 5  display last 1 month gold rates  ?
+
+    SELECT *
+    FROM GOLD_RATES
+    WHERE DATEID BETWEEN  DATEADD(MM,-1,GETDATE())  AND GETDATE()
+
+ EOMONTH() :-  
+ -------------------
+
+ => returns last day of the month 
+
+          EOMONTH(DATE,NUMBER)
+
+  1   SELECT EOMONTH(GETDATE(),0)   =>   2023-04-30
+
+  2   SELECT EOMONTH(GETDATE(),1)   =>   2023-05-31
+
+  3   SELECT EOMONTH(GETDATE(),-1)   =>  2023-03-31 
+
+
+
+
+
+STRING functions :- 
+--------------------------
+
+UPPER() :- 
+-------------
+
+ => converts string to uppercase 
+
+    syn :-  UPPER(string) 
+
+ SELECT UPPER('hello')   =>  HELLO
+
+ LOWER() :- 
+ --------------
+
+ => converts string to lowercase 
+
+    syn :- LOWER(string)
+
+  SELECT  LOWER('HELLO')   => hello 
+
+=> display   ENAME   SAL  ?  display names in lowercase ?
+ 
+     SELECT  LOWER(ENAME) AS ENAME,SAL FROM EMP 
+
+=> convert names to lowercase in table ?
+
+    UPDATE EMP SET ENAME = LOWER(ENAME) 
+
+LEN() :- 
+ ----------
+
+ =>  returns string length i.e. no of chars 
+
+          LEN(string) 
+
+   SELECT LEN('hello')      => 5  
+   SELECT LEN('hello welcome')   =>  13
+
+=> employees    name contains 5 chars ?
+
+     SELECT *
+     FROM EMP
+     WHERE  ENAME LIKE  '_____' 
+
+    SELECT *
+    FROM EMP
+    WHERE LEN(ENAME) = 5 
+
+ => arrange employee list len of ename wise asc order ? 
+
+     SELECT *
+     FROM EMP
+    ORDER BY LEN(ENAME) ASC 
+
+ LEFT() :- 
+ ------------
+
+ => used to extract part of the string.
+
+             LEFT(string,length)
+
+      SELECT LEFT('hello welcome',5)   =>   hello
+
+   =>employees name starts with 's' ?
+
+      SELECT * FROM EMP WHERE  ENAME LIKE 's%'
+
+      SELECT * FROM EMP WHERE LEFT(ENAME,1)='S'
+ 
+ RIGHT() :- 
+ ---------------
+
+  => returns characters starting from right side .
+
+                 RIGHT(string,len) 
+
+     SELECT RIGHT('hello welcome',4)   =>   come
+
+   => employees name ends with 's' ? 
+
+      SELECT * FROM EMP WHERE ENAME LIKE '%s' 
+
+      SELECT * FROM EMP WHERE RIGHT(ENAME,1)='s'
+  
+   => employees name starts and ends with same char ?
+
+         SELECT * FROM EMP WHERE ENAME LIKE  'a%a'
+                                                            OR
+                                                            ENAME LIKE 'b%b'
+                                                            OR
+ 
+        SELECT * FROM EMP WHERE LEFT(ENAME,1) = RIGHT(ENAME,1) 
+
+    
+  scenario :- 
+  --------------
+
+   =>  generate emailids for employees ?
+
+         empno        ename            emailid
+         7369          smith               smi736@tcs.com
+         7499          allen                all749@tcs.com
+
+        concatenation operator  =>  + 
+
+                               'a' + 'b'   =>   ab
+                             
+       SELECT empno,ename,
+                      LEFT(ename,3) +  LEFT(empno,3) + '@tcs.com'  as emailid
+       FROM emp 
+
+      => store emailids in db ?
+
+       step 1 :- add emailid column to emp table 
+
+         ALTER TABLE EMP
+                  ADD    EMAILID  VARCHAR(30) 
+
+      step 2 :-  update the column with emailids 
+
+     UPDATE EMP 
+     SET EMAILID = LEFT(ename,3) + LEFT(empno,3) + '@tcs.com'
+
+   SUBSTRING() :- 
+   ----------------------
+
+   => used to extract part of the string starting from specific position
+
+               SUBSTRING(string,start,len)
+
+ 
+     SELECT SUBSTRING('HELLO WELCOME',7,4)   =>  WELC
+
+     
+   REPLICATE() :- 
+   ----------------------
+
+   => used to repeat char for given no of times 
+
+         REPLICATE(char,len)
+
+   SELECT REPLICATE('*',10)   =>  **********
+
+   => display  ENAME    SAL    ?
+                                      
+                                     1000.00  =>   ********
+
+       SELECT ENAME,REPLICATE('*',LEN(SAL)) AS SAL FROM EMP 
+
+ 
+scenario :- 
+--------------
+
+   ACCOUNTS
+   ACCNO                      BAL
+   123456789623          10000
+
+   your a/c no  XXXX9623  debited  -------  ? 
+
+   
+ CREATE TABLE ACCOUNTS
+ (
+   ACCNO  BIGINT,
+    BAL  MONEY
+  )
+  
+  INSERT INTO ACCOUNTS VALUES(12345678963,10000)
+
+  SELECT REPLICATE('X',4)  + RIGHT(ACCNO,4) FROM ACCOUNTS 
+   
+ REPLACE() :- 
+ ------------------
+
+ => used to replace one string with another string
+
+                  REPLACE(str1,str2,str3) 
+
+      in str1,  str2 replaced with str3 
+
+  
+   SELECT REPLACE('hello','ell','abc')      =>    habco
+   
+  SELECT REPLACE('hello','l','abc')         =>    heabcabco
+
+  SELECT REPLACE('hello','elo','abc')      =>    hello
+
+  SELECT REPLACE('hello','ell','')            =>     ho
+
+=> remove   '@' from '@@he@@ll@@o@@'   ?
+
+      output :- hello
+
+    SELECT  REPLACE('@@he@@ll@@o@@','@','')    =>   hello
+
+TRANSLATE() :- 
+---------------------
+
+ => used to translate one char to another char
+
+                TRANSLATE(str1,str2,str3)
+
+    SELECT TRANSLATE('hello','elo','abc')         =>   habbc 
+
+                        e  => a
+                        l   => b
+                        o  => c 
+
+   SELECT TRANSLATE('hello','elo','')             => ERROR
+
+NOTE :-   translate function can be used to encrypt data i.e. converting plain text to 
+  cipher text i.e. the text one cannot understand
+
+ example :- 
+
+ => display ENAME  SAL  ?   encrypt salaries ?
+ 
+
+   SELECT  ENAME,
+                   TRANSLATE(SAL,'0123456789.' , '$kT*g@U%^#&')  AS SAL
+   FROM EMP 
+
+ 
+        JONES     2975.00   =>  T#%@&$$
+
+
+=>   remove all special chars from  '@#he*&ll$%o^#'  ?
+
+           output :-  hello 
+ 
+
+ step 1 :-   translate all the special chars to one special char
+
+  SELECT  TRANSLATE('@#he*&ll$%o^#' ,'@#*&$%^#','@@@@@@@@')
+   
+  output :- @@he@@ll@@o@@
+
+ step 2 :-  replace '@' with null
+
+ SELECT
+     REPLACE(TRANSLATE('@#he*&ll$%o^#' ,'@#*&$%^#','@@@@@@@@'),'@','')
+
+ 
+CHARINDEX() :- 
+---------------------
+
+ => returns position of a character in a string.
+
+    CHARINDEX(char,string,[start]) 
+
+  SELECT CHARINDEX('O','HELLO WELCOME')   =>   5
+  SELECT CHARINDEX(' ','HELLO WELCOME')     =>   6
+  SELECT CHARINDEX('X','HELLO WELCOME')   =>   0
+  SELECT CHARINDEX('O','HELLO WELCOME',6)  => 11
+  SELECT CHARINDEX('L','HELLO WELCOME',5)   => 9
+
+trim() :- 
+---------------------
+It removes the empty space from left and right side of character expression.
+  syn: trim(string expression)
+
+select trim(name) from emp
+
+
+Reverse() :- 
+---------------------
+helps to reverse the specified expression.
+ syn: reverse(character expression)
+
+select reverse(name) from emp
+
+isnull() :- 
+---------------------
+returns the specified value if the expression is null, otherwise return expression.
+
+  syn: isnull(expression,value)
+select  city,isnull(city,'unknown') as new_city from orders
+
+coalesce() :- 
+---------------------
+Returns the first null non-null value in a list.
+
+  syn: coalesce(val1,val2,....,valn)
+select  city,coalesce(city,'state') as new from orders
+
+
+string_agg() :- 
+---------------------
+This function concanates of string into a single string,separated by specified separator.
+
+syn : string_agg(input string,separator) [within group (order by exp[asc/desc])]
+
+select city,string_agg(email,',') from customer group by city
+
+string_split() :- 
+---------------------
+This function is a table valued function that splits a string into rows of substring ,based on a specified separator charactor.
+
+ syn: string_split(input string,separator)
+
+select value as room_type,count(*) as no_of_rooms
+cross apply string_split(filter_room_type,',')
+group by value
+order by no_of_rooms
+
+
+Numeric Functions :- 
+---------------------------
+
+ABS() :- returns absolute value
+
+  SELECT ABS(-10)   =>    10 
+  SELECT ABS(10)    =>    10
+
+POWER() :-  used to calculate power
+
+   SELECT POWER(3,2)  => 9
+
+SQRT() :- returns square root of a number
+
+  SELECT SQRT(16) => 4 
+
+SIGN() :-  used to find whether given number is positive or negative
+
+  SELECT SIGN(100)  => 1
+  SELECT SIGN(-100) => -1
+  SELECT SIGN(100-100) => 0
+
+Rounding numbers :- 
+---------------------------- 
+ 
+ROUND
+CEILING
+FLOOR
+
+      38.456789   => 38
+                               38.46
+                               38.4568
+
+ROUND :- 
+--------------
+
+ => rounds number to integer or to decimal places 
+
+     ROUND(number,decimal places)
+
+  SELECT ROUND(38.456789,0)   => 38
+
+   38----------------------------38.5--------------------------------39
+
+   number >= avg  => rounded to highest
+   number < avg    =>  rounded to lowest 
+
+    SELECT ROUND(38.556789,0)   => 39
+
+   SELECT ROUND(38.456789,2)   =>  38.46
+
+   SELECT ROUND(38.453789,2)   =>  38.45
+
+   SELECT ROUND(386,-2)            =>  400
+  
+    
+      300------------------350-----------------------400
+
+     SELECT ROUND(386,-1)          =>   390
+
+     380-------------------385---------------------390
+
+      SELECT ROUND(586,-3)         =>   1000
+ 
+     0------------------500---------------------1000
+
+    
+  display  ename  sal ? round sal to hundreds ?
+
+  SELECT ENAME,ROUND(SAL,-2) AS SAL FROM EMP   
+
+      
+ SELECT ROUND(4567,-1),ROUND(4567,-2),ROUND(4567,-3) 
+
+  O/P :-  4570            4600                5000
+
+ CEILING() :- 
+ --------------
+
+  => rounds number always to highest
+
+            CEILING(number)
+
+    SELECT CEILING(3.1)    =>    4  
+ 
+ FLOOR() :- 
+ ---------------
+
+ => rounds number always to lowest
+
+         FLOOR(number) 
+
+  SELECT FLOOR(3.9)    =>    3 
+
+conversion functions :- 
+-----------------------------
+
+=> these functions are used to convert one datatype to another datatype
+
+  1 CAST
+  2 CONVERT 
+
+ 
+ CAST :- 
+ -----------
+                     CAST(expr AS  target-type)
+
+   SELECT  CAST(10.5  AS INT)  =>   10 
+  
+ => display  smith  earns  1000
+                   allen   earns  1600  ? 
+ 
+      SELECT ename  + ' earns ' +  sal  FROM emp    => ERROR
+
+     SELECT ename  + ' earns ' +  CAST(sal AS VARCHAR)
+     FROM emp 
+
+  => display  smith joined on 1980-12-17 as clerk ? 
+                    
+       SELECT ename + ' joined on ' + 
+	              CAST(hiredate AS VARCHAR) + ' as ' + job
+       FROM emp 
+CONVERT() :- 
+ -------------------
+
+               CONVERT(TARGET-TYPE,SOURCE-VALUE)
+
+    SELECT CONVERT(INT,10.5) 
+
+
+ => diff b/w cast & convert ? 
+
+    1   using convert function we can display dates in different formats but not possible using
+         cast function
+
+    2 using convert function we can display money in different formats but not possible using
+      cast function 
+
+    Displaying dates in different formats :- 
+   --------------------------------------------------
+ 
+         CONVERT(VARCHAR,DATE,STYLE NUMBER)
+
+ EX :- 
+
+     SELECT  CONVERT(VARCHAR,GETDATE(),101)   =>   04/12/2023
+                                                                             102    =>   2023.04.12
+                                                                             103    =>   12/04/2023
+       
+                                                                             112    =>   20230412
+                                      
+                                                                             114   =>    16:30:13:880
+
+  
+   display  ENAME    HIREDATE   ?  display hiredates in DD.MM.YYYY format ?
+
+   
+   SELECT  ENAME,CONVERT(VARCHAR,HIREDATE,104) AS HIREDATE FROM EMP 
+                  
+     
+ Money Styles :-  
+ ---------------------
+
+ 0  =>  2 digits after decimal                                 (1000.00)
+ 1  =>  displays number with thousand seperator  (1,000.00)
+ 2  =>  4 digits after decimal                                  (1000.0000)
+
+ display  ENAME  SAL  ?  display salaries with thousand seperator ?
+ 
+ SELECT  ENAME,CONVERT(VARCHAR,SAL,1) AS SAL FROM EMP 
+
+ Special functions :- 
+ --------------------------
+
+  ISNULL() :-  
+  ----------------
+
+  => used to convert null values 
+
+               ISNULL(arg1,arg2)
+
+         if arg1 = null returns arg2
+         if arg1 <> null returns arg1 only
+
+      SELECT ISNULL(100,200)     =>    100
+      SELECT ISNULL(NULL,200)  =>    200
+
+ => display  ENAME  SAL    COMM   TOTSAL   ?
+
+             TOTSAL = SAL + COMM 
+ 
+      SELECT ENAME,SAL,COMM, SAL+COMM AS TOTSAL FROM EMP 
+ 
+      smith    1000      500         1500
+      jones    2975      NULL       NULL
+
+       SELECT ENAME,SAL,COMM, SAL+ISNULL(COMM,0) AS TOTSAL FROM EMP 
+  
+ 	 smith    1000      500         1500
+     	 jones    2975      NULL      2975
+
+   => display   ENAME  SAL   COMM  ?   if COMM = NULL display  NO COMM ?
+
+ 	SELECT ENAME,SAL,
+     	        ISNULL(CAST(COMM AS VARCHAR),'NO COMM') AS COMM
+ 	FROM EMP  
+   
+ Analytical Functions :- 
+-----------------------------
+
+ RANK & DENSE_RANK :- 
+ ----------------------------------
+
+ =>  both functions  are used to find ranks
+ =>  ranking is always based on some field
+ =>  for rank functions data must be sorted 
+
+    syn :-   RANK() OVER  (ORDER BY  COLNME  ASC/DESC , --------)
+                DENSE_RANK() OVER (ORDER BY COLNAME ASC/DESC,-----)
+
+  =>  display ranks of the employees based on sal and highest paid employee should get
+        1st rank ?
+
+       SELECT  ENAME,SAL,
+                       RANK() OVER (ORDER BY  SAL DESC) AS RNK
+       FROM EMP 
+        
+         	 
+     difference between  rank & dense_rank  functions ? 
+   
+    1    rank function generates gaps but dense_rank will not generate gaps.
+ 
+    2    rank function ranks may not be in sequence but in dense_rank
+          ranks are always in sequence.
+
+	        SAL		RANK		DENSE_RANK
+ 	        5000		1		1
+                        4000		2		2
+                        3000		3		3
+                        3000		3		3
+                        3000		3		3
+                        2000		6		4
+                        2000		6		4
+                        1000		8		5
+
+ =>  display ranks of the employees based on sal , if salaries are same 
+       then ranking should be based on hiredate ?
+
+       SELECT  ename,hiredate,sal,
+                      DENSE_RANK() OVER (ORDER BY sal DESC,
+                                                                               hiredate ASC) as rnk
+       FROM emp 
+
+ Question :- 
+ -----------------
+
+  STUDENT
+  SNO  SNAME  M   P   C
+  1       A             80  90  70
+  2       B             60  50  70
+  3       C             90  80  70
+  4       D             90  70  80
+
+ => find the ranks of the students based on avg desc,m desc,p desc ?
+
+13-arp-23
+
+  PARTITION BY clause :- 
+  --------------------------------
+
+  => used to find ranks with in group , for example to find ranks with in dept 
+       first we need to divide the table dept wise by using  partition by clause
+       and apply dense_rank function on each dept.
+
+    SELECT  ename,sal,deptno,
+             dense_rank() over (partition by deptno
+                                          order by sal desc) as rnk
+    FROM emp 
+
+      	king	5000.00	10	1
+	clark	2450.00	10	2
+	miller	1300.00	10	3
+
+	ford	3000.00	20	1
+	scott	3000.00	20	1
+	jones	2975.00	20	2
+	adams	1100.00	20	3
+	smith	1000.00	20	4
+  
+ ROW_NUMBER() :- 
+ --------------------------
+
+ =>  returns record number
+ => row_number is also based on a column
+ => for row_number data must be sorted 
+
+     ROW_NUMBER() OVER (ORDER BY COLNAME ASC/DESC)
+
+ Ex :- 
+
+    SELECT empno,ename,sal,
+           row_number() over (order by empno asc) as rno
+   FROM emp 
+
+     	7369	smith	1000.00	1
+	7499	allen	1600.00	2
+	7521	ward	1250.00	3
+	7566	jones	2975.00	4
+	7654	martin	1250.00	5
+
+RANK VS DENSE_RANK VS ROW_NUMBER :- 
+----------------------------------------------------------------
+
+    SAL		RANK	DENSE_RANK	ROW_NUMBER
+
+    5000		1	1		1	
+    4000		2	2		2
+    3000		3	3		3
+    3000		3	3		4
+    3000		3	3		5
+    2000		6	4		6
+    2000		6	4		7
+    1000		8	5		8		
+
+ AGGREGATE functions :-  
+ ----------------------------------
+
+ =>  these functions process groups of rows and returns one value.
+
+  MAX() :- 
+  -----------
+
+ => returns maximum value
+
+     MAX(arg) 
+
+1   SELECT MAX(SAL) FROM EMP    =>  5000
+
+2   SELECT MAX(HIREDATE) FROM EMP  => 1983-01-12
+
+MIN() :- 
+---------
+
+  => returns minimum value
+
+   MIN(arg) 
+
+  SELECT MIN(sal) FROM emp  =>  800
+
+ SUM() :- 
+ ------------
+
+ => returns total
+
+  SUM(arg) 
+
+  SELECT SUM(sal) FROM emp   => 29225
+
+ => round the total sal to thousands ?
+
+ SELECT ROUND(SUM(sal),-3)  FROM emp  => 29000
+     
+ 29000----------------29500--------------------30000
+
+ => after rounding display total sal with thousand seperator ?
+ 
+     SELECT CONVERT(VARCHAR,ROUND(SUM(sal),-3) ,1) 
+     FROM emp
+
+    O/P :-  29,000.00
+
+ => display total sal paid to managers ?
+
+     SELECT SUM(sal)
+     FROM emp 
+     WHERE job='MANAGER' 
+
+  O/P :- 8275
+
+ AVG() :- 
+ -----------
+
+ => returns average value
+
+  AVG(arg) 
+
+ 1  SELECT AVG(sal) FROM emp   =>   2087.50
+
+ 2  SELECT FLOOR(AVG(sal))  FROM emp  => 2087.00
+ 
+COUNT(*) :- 
+----------------
+
+ => returns no of rows in a table
+
+     SELECT COUNT(*) FROM emp   =>  14
+ 
+ => how many employees joined in 1981 year ?
+
+     SELECT COUNT(*) FROM emp 
+                    WHERE DATEPART(YY,HIREDATE) = 1981 
+
+ => how many employees joined on  sunday ?
+
+      SELECT COUNT(*) 
+      FROM emp 
+     WHERE DATEPART(DW,HIREDATE) = 1 
+
+ NOTE :- aggregate functions are not allowed in where clause and they
+ are allowed only in select,having clauses
+
+
+ 
+
+
+

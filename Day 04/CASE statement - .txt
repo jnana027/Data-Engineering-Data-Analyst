@@ -1,0 +1,138 @@
+CASE statement :- 
+ ------------------------
+
+ => used to implement if-then-else  in sql
+ => similar to switch case
+ => using case we can return values based on condition
+ => case statements are 2 types 
+
+   1  simple case
+   2  searched case 
+
+  simple case :- 
+
+  CASE  COLNAME
+  WHEN VALUE1 THEN RETURN EXPR1
+  WHEN VALUE2 THEN RETURN EXPR2
+  WHEN  VALUE3 THEN RETURN EXPR3
+  -----------------
+  ELSE RETURN EXPR
+  END
+
+ searched case :- 
+ ---------------------- 
+ 
+  CASE  
+  WHEN COND1 THEN RETURN EXPR1
+  WHEN COND2 THEN RETURN EXPR2
+  ---------------
+  ELSE RETURN EXPR
+  END
+
+   
+   SELECT deptno,job,SUM(sal) as totsal,
+	                CASE grouping_id(deptno,job) 
+		 WHEN 1 THEN 'Dept Subtotal'
+		 WHEN 2 THEN 'Job Subtotal'
+		 WHEN 3 THEN 'Grand total'
+		 END as subtotals
+       FROM emp 
+       GROUP BY CUBE(deptno,job)
+       ORDER BY deptno ASC,job ASC  
+ 
+=> display no of employees based on salary range ?
+
+ 	 0-2000               ?
+ 	 2000-4000         ?
+ 	 ABOVE 4000     ? 
+
+       SELECT CASE 
+                     WHEN SAL BETWEEN 0 AND 2000 THEN '0-2000'
+	     WHEN SAL BETWEEN 2001 AND 4000 THEN '2001-4000'
+	     WHEN SAL>4000 THEN 'ABOVE 4000'
+	     END AS SALRANGE , COUNT(*) AS CNT
+      FROM EMP 
+      GROUP BY CASE 
+                         WHEN SAL BETWEEN 0 AND 2000 THEN '0-2000'
+                         WHEN SAL BETWEEN 2001 AND 4000 THEN '2001-4000'
+	          WHEN SAL>4000 THEN 'ABOVE 4000'
+	          END 
+
+Questions :- 
+----------------
+
+PERSONS
+NAME   AGE     GENDER     ADDR    CITY    STATE 
+
+1   display state wise population ?
+2   display gender wise population ?
+3   display age group wise population ?
+
+        0-18    ?
+        19-40  ?
+        40-60  ?
+        >60     ?
+
+4   display state wise and with in state gender wise population
+     and display state wise subtotals ?
+
+5   display state wise and with in state age group wise population ?
+
+
+ SALES
+ DATEID	 	PRODID	  CUSTID    QTY     AMT    
+ 2020-01-01	10	   100	   1	2000
+
+ 1  display year wise total amount ?
+
+ 2  display year wise and with in year quarte wise total amount 
+     and display year wise subtotals ?
+
+=> increment employee salaries as follows ? 
+
+      if deptno =10  incr sal by 10%
+                       20                   15%
+                       30                   20%
+                      others              5%
+
+     UPDATE EMP   
+     SET SAL =  CASE DEPTNO
+                        WHEN 10 THEN  SAL + (SAL*0.1)
+                        WHEN 20 THEN SAL + (SAL*0.15)
+                        WHEN 30 THEN SAL + (SAL*0.2)
+                        ELSE SAL + (SAL*0.05)
+                        END
+ 
+ => display   SNO   TOTAL    AVG    RESULT   ?
+
+   STUDENT 
+   SNO   SNAME     S1     S2    S3
+   1         A                80     90     70
+   2         B               30     60     50
+
+  SELECT  SNO,
+                  S1+S2+S3  AS TOTAL,
+                  (S1+S2+S3)/3 AS AVG,
+                  CASE
+                  WHEN S1>=35  AND S2>=35 AND S3>=35 THEN 'PASS'
+                  ELSE 'FAIL'
+                  END AS RESULT
+  FROM STUDENT
+  
+=> display first day of the year ?
+
+    SELECT  DATEADD(YY,DATEDIFF(YY,0,GETDATE()),0)  => 2023-01-01
+                                          ---------------------------------------
+                                                     123
+
+    0  means => 1900-01-01
+
+  
+    DATEADD(INTERVAL , INTEGER,DATE)
+
+   DATEADD(YY,0,0)
+
+
+ => display last day of the year ?
+
+   SELECT DATEADD(YY,DATEDIFF(YY,0,GETDATE())+1,0)-1

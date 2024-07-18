@@ -1,0 +1,760 @@
+ INTEGRITY CONSTRAINTS 
+ 		---------------------------------------
+
+   => integrity constraints are rules to maintain data quality.
+   => used to prevent users from entering invalid data.
+   => used to enforce rules like min bal must be 1000
+  
+   NOT NULL
+   UNIQUE
+   PRIMARY KEY
+   CHECK
+   FOREIGN KEY
+   DEFAULT
+
+ => above constraints can be declared in two ways 
+
+   1  column level
+   2  table level 
+
+ COLUMN LEVEL :- 
+ --------------------------
+
+ => if constraints are declared immediately after declaring column then it is called column level
+
+     CREATE TABLE TABNAME
+     (
+           COLNAME     DATATYPE(SIZE)  CONSTRAINT ,
+           COLNAME     DATATYPE(SIZE)  CONSTRAINT ,
+            ---------------------
+      )
+
+  
+ NOT NULL :- 
+ -----------------
+
+ => NOT NULL  constraint doesn't accept null values.
+
+     CREATE TABLE emp77
+     (
+        empno INT ,
+        ename  VARCHAR(10) NOT NULL
+      )
+
+      INSERT INTO EMP77 VALUES(100,NULL) => ERROR
+
+  UNIQUE :-  
+  --------------
+ 
+  => unique constraint doesn't  accept duplicates 
+
+ ex :- 
+
+    CREATE TABLE CUST
+    (
+      CID   		INT  ,
+      NAME  	VARCHAR(10) NOT NULL,
+      EMAILID	VARCHAR(10) UNIQUE
+     )
+
+ 
+     INSERT INTO CUST VALUES(100,'A','abc@gmail.com')
+     INSERT INTO CUST VALUES(101,'B','abc@gmail.com')   => ERROR
+     INSERT INTO CUST VALUES(102,'C',NULL)
+     INSERT INTO CUST VALUES(103,'D',NULL)                    => ERROR
+
+  NOTE :- unique constraint doesn't accept duplicates but allows one null 
+
+PRIMARY KEY :- 
+ ----------------------
+
+ =>  PRIMARY KEY doesn't accept duplicates & nulls. 
+ =>  primary key is the combination of unique & not null.
+ => in table one column must be there to uniquely identify the records and that
+      column must be declared  with primary key,
+
+ ex :- 
+
+  CREATE TABLE emp11
+  (
+      empid   INT   PRIMARY KEY,
+      ename  VARCHAR(10) NOT NULL,
+      sal        MONEY
+   )
+
+  INSERT INTO emp11 VALUES(100,'A',5000)
+  INSERT INTO emp11 VALUES(100,'B',6000)         => ERROR
+  INSERT INTO emp11 VALUES(NULL,'C',4000)      => ERROR
+     
+  => because it is not allowing duplicates & nulls  into empid , so using empid column
+       we can uniquely identify the records.
+ 
+  =>  only one primary key is allowed per table , if we want multiple primary keys then\
+        declare one column with primary key and  other columns with unique  not null.
+     
+
+       CREATE TABLE CUST
+       (
+        CUSTID   INT   PRIMARY KEY,
+        NAME     VARCHAR(10) NOT NULL,
+        AADHARNO  NUMERIC(12)  UNIQUE NOT NULL,
+        PANNO      CHAR(10)   UNIQUE NOT NULL
+       )
+   
+ => difference between unique & primary key  ?
+
+                 UNIQUE                                          PRIMARY KEY
+
+   1         allows one null                                   doesn't allow nulls 
+
+   2         multiple columns can                         one column can be
+              be declared with unique                     declared with primary key
+
+ CANDIDATE KEY :- 
+  -------------------------
+
+  =>  a field eligible for primary key is called candidate key.
+
+        EX :-
+
+            VEHICLES
+            VEHNO     NAME     MODEL     COST     CHASSISNO 
+ 
+            candidate keys	 :-  	VEHNO,CHASSISNO
+            
+            primary key                   :-            VEHNO
+
+           secondary key               :-             CHASSISNO
+           or
+           alternate key
+            	 
+
+  => secondary key or alternate keys are declared by using  UNIQUE   NOT NULL.
+
+  CHECK :- 
+  -------------
+
+  =>  use check constraint when rule based on condition.
+
+             syn :-   CHECK(condition)
+
+  example 1 :-    sal must be min 3000
+
+       CREATE TABLE emp12
+       (
+             empid  INT  PRIMARY KEY,
+             ename  VARCHAR(10) NOT NULL,
+             sal       MONEY  CHECK(sal>=3000)
+       )
+
+	INSERT INTO EMP12 VALUES(100,'A',1000)   => ERROR
+	INSERT INTO EMP12 VALUES(101,'B',5000)
+	INSERT INTO EMP12 VALUES(102,'C',NULL)
+
+    2    gender must be 'm','f' ? 
+
+          gender    char(1)     CHECK(gender IN ('m','f'))
+
+   3     amt must be multiple of 100  ?
+ 
+          amt   money    CHECK(amt%100=0)
+
+  4     pwd must be min 8 chars 
+
+         pwd    varchar(12)    CHECK( LEN(pwd) >= 8)
+
+
+   5    emailid  must contain '@'
+                      must end with '.com' or '.co' or '.in'
+
+        emailid   varchar(20)  check(emailid like '%@%'
+                                                     and
+                                                     (
+                                                          emailid like '%.com'
+                                                          or
+                                                         emailid like '%.co'
+                                                         or
+                                                        emailid like '%.in'
+                                                     ))
+
+
+FOREIGN KEY :- 
+-----------------------
+
+ => foreign key is used to establish relationship between two tables 
+
+ 
+ PROJECTS
+ projid    name    duration    cost     client
+ 100      A           5 YEARS   300     TATA MOTORS
+ 101      B          3 YEARS   200      DBS BANK
+ 102      C          4 YEARS   400      L&T
+
+ EMP
+ empid   ename   sal            projid    REFERENCE projects(projid)
+ 1           K           5000        100
+ 2           S           4000        101
+ 3           D           3000        100
+ 4           E           4000        NULL
+ 
+ => to establish relationship between two tables then take primary key of one table  
+      and add it to another table as foreign key  and declare with references constraint.
+
+ => values entered in foreign key column should match with values entered in 
+      primary key column
+
+ => foreign key allows duplicates & nulls 
+
+ => after declaring foreign key a relationship is established between two tables 
+      called parent/child relationship.
+
+ =>  primary key table is parent and foreign key table is child.
+
+   CREATE TABLE projects
+   (
+       projid  INT   PRIMARY KEY,
+       pname  VARCHAR(10),
+       client    VARCHAR(10)
+   ) 
+
+  INSERT INTO projects VALUES(100,'A','TATA')
+  INSERT INTO projects VALUES(101,'B','DBS')
+
+  CREATE TABLE emp_proj
+  (
+     empid   INT PRIMARY KEY,
+     ename  VARCHAR(10) NOT NULL,
+     sal        MONEY  CHECK(sal>=3000),
+     projid    INT  REFERENCES projects(projid)
+   )
+
+  INSERT INTO emp_proj VALUES(1,'A',5000,100)
+  INSERT INTO emp_proj VALUES(2,'B',6000,999)  => ERROR
+  INSERT INTO emp_proj VALUES(3,'C',4000,NULL)
+  INSERT INTO emp_proj VALUES(4,'D',3000,100)
+
+ Assignment :- 
+
+ ACCOUNTS
+ ACCNO     ACTYPE     BAL
+
+ Rules :-  
+ ----------
+ 
+ 1   accno should not be duplicate & null
+ 2   actype must be 's' or 'c'
+ 3   bal must be min 1000
+
+ TRANSACTIONS
+ TRID    TTYPE    TDATE     TAMT     ACCNO
+ 
+ Rules :- 
+ ----------
+ 
+ 1  trid should not be duplicate & null
+ 2  ttype must be 'w' or 'd'
+ 3  tamt must be multiple of 100
+ 4  accno should match with accounts table accno
+
+
+ LOANS
+ LOANID      TYPE     AMT    ACCNO
+
+ Rules :- 
+
+  1   loanid should not be duplicate & null
+  2   type must 'p' , 'h', 'g' 
+  3   accno  should match with accounts table accno
+
+DEFAULT :- 
+   ---------------
+
+   => a  column can be declared with default value  as follows
+
+     ex :-     hiredate   date   default  getdate()
+
+  => while inserting if we skip hiredate then sql server inserts default value.
+
+  ex :-  
+
+    CREATE TABLE emp22
+    (
+        empno  INT ,
+        ename  VARCHAR(10),
+        hiredate DATE  DEFAULT GETDATE())
+    )
+
+   INSERT INTO emp22(empno,ename)  VALUES(100,'A') 
+   INSERT INTO emp22  VALUES(101,'B','2023-01-01') 
+   INSERT INTO emp22  VALUES(102,'C',NULL) 
+
+   SELECT * FROM emp22
+
+   empno	ename	hiredate
+   100	A	2023-04-19
+   101	B	2023-01-01
+   102	C	NULL
+
+ TABLE LEVEL :- 
+ ----------------------
+
+ =>  if constraints is declared after declaring all columns then it is called table level.
+ =>  use table level to declare constraint multiple columns or combination of columns.
+
+      CREATE TABLE <tabname>
+      (
+         colname  datatype(size)  ,
+         colname  datatype(size),
+          ------------------------,
+                    CONSTRAINT(col1,col2,---)
+       )
+
+   Declaring check constraint at table level :-
+   -------------------------------------------------------
+
+   PRODUCTS
+   prodid    pname     price     mfd_dt    	 exp_dt  
+   1           A              100      2023-04-01  2023-01-01      invalid
+   
+            rule :-  exp_dt > mfd_dt 
+
+   => above example rule based on multiple columns so cannot be declared at column level
+        and must be declared at table level.
+
+       CREATE TABLE products
+       (
+         prodid  INT  PRIMARY KEY,
+         pname  VARCHAR(10) NOT NULL,
+         price     MONEY,
+         mfd_dt   DATE,
+         exp_dt    DATE,
+                 CHECK(exp_dt > mfd_dt)
+        )
+
+   INSERT INTO products VALUES(100,'A',1000,GETDATE(),'2023-01-01') => ERROR
+   INSERT INTO products VALUES(100,'A',1000,'2023-01-01',GETDATE()) => 1 row created
+
+  Composite primary key :- 
+  ---------------------------------
+
+  => if primary key is declared for combination of columns then it is called composite primary key
+
+  => sometimes in tables we may not uniquely identify the records by using single column
+       and we need combination of columns to uniquely identify , so that combination
+       shoule be declared primary key at table level.
+
+ => in composite primary key combination should not be duplicate
+
+     example  1  :-
+
+     STUDENT		 COURSE
+     SID	SNAME		 CID	NAME
+     1	A		 10	.NET
+     2	B		 11	 SQL SERVER
+
+    REGISTRATIONS
+    SID	CID	DOR	FEE
+    1	10	?	?
+    1	11	?	?
+    2	10	?	?
+
+  => in the above example sid,cid combination uniquely identifies the records , so 
+       declare this combination as primary key at table level.
+
+  CREATE TABLE student
+  (
+     sid  INT  PRIMARY KEY,
+     sname VARCHAR(10) NOT NULL
+  )
+
+  INSERT INTO student VALUES(1,'A'),(2,'B')
+
+  CREATE TABLE course
+  (
+    cid  INT  PRIMARY KEY,
+    cname VARCHAR(10) NOT NULL
+   )
+
+  INSERT INTO course VALUES(10,'.NET'),(11,'SQL SERVER')
+
+  CREATE TABLE registrations
+  (
+      sid  INT  REFERENCES student(sid),
+      cid  INT  REFERENCES course(cid),
+      dor DATE,
+      fee MONEY ,
+               PRIMARY KEY(sid,cid)
+   )
+
+ 
+   INSERT INTO registrations VALUES(1,10,GETDATE(),2000)
+   INSERT INTO registrations VALUES(1,11,GETDATE(),2000)
+   INSERT INTO registrations VALUES(2,10,GETDATE(),2000)
+   INSERT INTO registrations VALUES(1,10,GETDATE(),2000)  => ERROR
+
+  Example 2 :- 
+
+  SALES
+  DATEID	 	PRODID	   CUSTID    QTY     AMT 
+  2023-04-18	100	   10	     1	2000
+  2023-04-18            101               10                1        1000
+  2023-04-18            100	  11	     1         2000
+  2023-04-19            100              10                 1        2000
+
+  => identify primary key and write create table script ?
+
+composite foreign key :- 
+------------------------------
+
+=> if foreign key declared for combination then it is called composite foreign key.
+=> a composite foreign key refers composite primary key.
+
+  
+Example :-
+
+    REGISTRATIONS
+    SID	CID	DOR	FEE
+    1	10	?	?
+    1	11	?	?
+    2	10	?	?
+
+    CERTIFICATES
+    CERTNO     DOI  	SID	CID
+    1000            ???	1	10
+    1001	        ???   1               11
+    1002            ???    2               11   => INVALID
+
+
+ => in the above example SID,CID combination should match with registrations table
+      SID,CID combination ,so declare this combination as foreign key at table level
+
+   CREATE TABLE CERTIFICATES
+   (
+      CERTNO   INT   PRIMARY KEY,
+      DOI           DATE,
+      SID           INT,
+      CID          INT,
+               FOREIGN KEY(SID,CID)   
+                              REFERENCES REGISTRATIONS(SID,CID)
+      )
+
+ 
+1  which of the following constraint cannot be declared at table level ?
+
+  A    UNIQUE
+  B   CHECK
+  C   NOT NULL
+  D   PRIMARY KEY
+  E   FOREIGN KEY 
+
+   ANS :- C
+  
+
+2   Which statements are true regarding constraints ?
+
+A  a foreign key cannot contain NULL value      F
+B  a column with UNIQUE constraint can contain NULL value   T
+C  a constraint is enforced only for the INSERT operation on a table  F
+D  all constraints can be defined at column level and table level.    F
+
+3 
+
+ Which CREATE TABLE statement is valid?
+
+A. CREATE TABLE ord_details
+(ord_no NUMERIC(2) PRIMARY KEY,
+item_no NUMERIC(3) PRIMARY KEY,
+ord_date DATE NOT NULL);
+
+B. CREATE TABLE ord_details
+(ord_no NUMERIC(2) UNIQUE, NOT NULL,
+item_no NUMERIC(3),
+ord_date DATE DEFAULT GETDATE() NOT NULL);
+
+C. CREATE TABLE ord_details
+(ord_no NUMERIC(2) ,
+item_no NUMERIC(3),
+ord_date DATE DEFAULT NOT NULL,
+   UNIQUE (ord_no),
+  PRIMARY KEY (ord_no));
+
+D. CREATE TABLE ord_details
+(ord_no NUMERIC(2),
+item_no NUMERIC(3),
+ord_date DATE DEFAULT GETDATE() NOT NULL,
+           PRIMARY KEY (ord_no, item_no));
+
+Adding constraints to existing table :- 
+------------------------------------------------
+
+ => "ALTER" command is used to add constraints to existing table.
+
+       CREATE TABLE emp99
+       (
+          empno  INT ,
+          ename  VARCHAR(10) ,
+          sal        MONEY,
+          dno       INT 
+       )
+
+ Adding primary key :- 
+ ---------------------------
+
+ => primary key cannot be added to nullable column.
+ => to add primary key first change the column to not null. 
+
+ Ex :- 
+
+  => add primary key to empno  ?
+
+    STEP 1 :-  change column empno to not null
+
+     ALTER TABLE emp99
+             ALTER COLUMN empno  VARCHAR(10) NOT NULL
+ 
+    STEP 2 :-  add primary key to empno 
+
+    ALTER TABLE emp99
+            ADD PRIMARY KEY(empno) 
+  
+  Adding check :- 
+ ----------------------
+
+  => add check constraint with condition sal >= 3000 ?
+ 
+       ALTER TABLE emp99 
+                  ADD CHECK(sal>=3000) 
+
+        
+          ALTER TABLE emp 
+                  ADD CHECK(sal>=3000)  => ERROR
+
+   note :- above command returns error because some of the employee salaries are
+   less than 3000 , while adding constraint sql server also validates existing data ,
+   if existing data satisfies the condition then constraint is added otherwise 
+   not added.
+
+   WITH NOCHECK :- 
+   --------------------------
+
+   =>  if constraint is added with "NO CHECK"  then sql server will not validate existing
+         data and it validates only new data
+
+       ALTER TABLE emp  
+                WITH NOCHECK ADD CHECK(sal>=3000)  
+
+   Adding foreign key :- 
+  ---------------------------
+
+   => add foreign key to dno that refers dept table primary key i.e. deptno 
+ 
+     ALTER TABLE emp99
+           ADD FOREIGN KEY(dno)  REFERENCES dept(deptno) 
+ 
+  changing from NULL to NOT NULL :- 
+  -------------------------------------------------
+
+  =>  modify the column ename to not null ?
+
+      ALTER TABLE emp99
+             ALTER COLUMN ename VARCHAR(10) NOT NULL 
+
+   Droping constraints :- 
+   -----------------------------
+ 
+   ALTER TABLE <TABNAME>
+              DROP  CONSTRAINT  <NAME> 
+
+ => drop check constraint in emp99 table ?
+
+     ALTER TABLE emp99
+         DROP CONSTRAINT  CK__emp99__sal__72C60C4A
+
+ => drop primary key in dept table ?
+
+       ALTER TABLE DEPT
+               DROP CONSTRAINT PK__DEPT__E0EB08D79BEB42A8 => ERROR
+
+      DROP TABLE DEPT  => ERROR 
+
+      TRUNCATE TABLE DEPT  => ERROR
+
+
+  NOTE :- 
+
+   1   primary key cannot be dropped if referenced by some fk
+   2   primary key table cannot be dropped if referenced by some fk
+   3   primary key table cannot be truncated if referenced by some fk
+
+DELETE rules :- 
+----------------------
+
+ 1  ON DELETE NO ACTION  (DEFAULT)
+ 2  ON DELETE CASCADE
+ 3  ON DELETE SET NULL
+ 4  ON DELETE SET DEFAULT
+
+ => these rules are declared with foreign key.
+ => delete rule specifies how child rows are affected if parent row is deleted.
+ 
+ ON DELETE NO ACTION :- 
+  ----------------------------------
+
+ => parent row cannot be deleted if associated with child rows.
+
+  CREATE TABLE dept88
+  (
+   dno int primary key,
+   dname varchar(10) 
+  )
+
+  INSERT INTO dept88 VALUES(10,'HR'),(20,'IT') 
+
+  CREATE TABLE emp88
+  (
+   empno INT PRIMARY KEY,
+   ename VARCHAR(10),
+   dno    INT  REFERENCES dept88(dno)
+ )
+
+  INSERT INTO emp88 VALUES(1,'A',10),(2,'B',10)
+
+  DELETE FROM dept88 WHERE dno = 10  => ERROR
+
+  scenario :- 
+  --------------
+
+  ACCOUNTS
+  ACCNO     BAL
+  100
+  101
+
+  LOANS
+  ID	TYPE	AMT	ACCNO   REFERENCES  ACCOUNTS(ACCNO)
+ 1	H	30	100
+ 2	C	10	100
+
+ RULE :-  account closing is not possible if associated with loans
+
+ ON DELETE CASCADE :- 
+ ----------------------------------
+
+ =>  if parent row is deleted then it is deleted along with child rows
+
+   CREATE TABLE dept88
+  (
+   dno int primary key,
+   dname varchar(10) 
+  )
+
+  INSERT INTO dept88 VALUES(10,'HR'),(20,'IT') 
+
+  CREATE TABLE emp88
+  (
+   empno INT PRIMARY KEY,
+   ename VARCHAR(10),
+   dno    INT  REFERENCES dept88(dno)
+                    ON DELETE CASCADE
+ )
+
+  INSERT INTO emp88 VALUES(1,'A',10),(2,'B',10)
+
+  DELETE FROM dept88 WHERE dno=10   =>   1  row deleted
+
+  SELECT * FROM emp88     => no rows 
+
+ scenario :- 
+ ------------
+
+ ACCOUNTS
+ ACCNO    BAL
+100	 10000
+1O1	 20000
+
+TRANSACTIONS
+TRID    TTYPE     TDATE      TAMT     ACCNO    REFERENCES ACCOUNTS(ACCNO)
+1          W             ??             1000     100           ON DELETE CASCADE
+2          D              ??             2000     100
+
+Rule :-  if account is closed then along with account delete transactions also 
+
+
+ON DELETE SET NULL :- 
+---------------------------------
+
+ => if  parent row is deleted then it is deleted but child rows are not deleted  but fk will be
+      set to null.
+
+    CREATE TABLE dept88
+  (
+   dno int primary key,
+   dname varchar(10) 
+  )
+
+  INSERT INTO dept88 VALUES(10,'HR'),(20,'IT') 
+
+  CREATE TABLE emp88
+  (
+   empno INT PRIMARY KEY,
+   ename VARCHAR(10),
+   dno    INT  REFERENCES dept88(dno)
+                    ON DELETE SET NULL
+ )
+
+  INSERT INTO emp88 VALUES(1,'A',10),(2,'B',10)
+
+    DELETE FROM DEPT88 WHERE DNO=10   => 1 ROW DELETED
+
+  SELECT * FROM EMP88
+ 
+  EMPNO	ENAME	DNO 
+  1	A	NULL
+  2	B	NULL
+
+ scenario :- 
+ -------------
+
+ PROJECTS
+ projid   pname   duration
+ 100
+101
+
+EMP
+empid	ename	projid   REFERENCES projects(projid) 
+1	A	100     ON DELETE SET NULL
+2	B	100
+
+ RULE :-  if project is deleted (completed)  then set the employee projid to null
+
+ON DELETE SET DEFAULT :- 
+ --------------------------------------
+
+=>  if  parent row is deleted then it is deleted but child rows are not deleted  but fk will be
+      set to default value.
+
+   CREATE TABLE dept88
+  (
+   dno int primary key,
+   dname varchar(10) 
+  )
+
+  INSERT INTO dept88 VALUES(10,'HR'),(20,'IT') 
+
+  CREATE TABLE emp88
+  (
+   empno INT PRIMARY KEY,
+   ename VARCHAR(10),
+   dno    INT  DEFAULT 20 
+                    REFERENCES dept88(dno)
+                    ON DELETE SET DEFAULT
+ )
+
+  INSERT INTO emp88 VALUES(1,'A',10),(2,'B',10)
+
+  DELETE FROM DEPT88 WHERE DNO = 10  => 1 row affected
+
+ SELECT * FROM EMP88
+
+  ENO	ENAME	DNO
+  1	A	20
+ 2	B	20
