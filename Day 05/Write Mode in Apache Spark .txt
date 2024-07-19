@@ -1,0 +1,24 @@
+Write Mode in Apache Spark :
+
+The core syntax for writing data in Apache Spark
+df.write.format(...).option(...).partitionBy(...).bucketBy(...).sortBy( ...).save()
+
+
+format — specifies the file format as in CSV, JSON, or parquet. The default is parquet.
+option — a set of key-value configurations to parameterize how to write data
+partitionBy() — It is a method of the DataFrameWriter class which is used to partition the data based on one or multiple column values while writing DataFrame to disk/file system, It will create folder based on partition column.
+bucketBy() — It is a method of the DataFrameWriter class which is used to partition the data based on the number of buckets specified and on the bucketing column while writing DataFrame to disk/file system,It will create file based on bucket column.
+
+
+There are 4 typical save modes or write mode and the default mode is errorIfExists.
+1.overwrite : First it will delete the existing directory and then it will create a new directory.
+2.append : appends the output files to the directory if it already exists.
+3.errorifExists or error : Throws an error if the directory/file already exists.
+4.ignore : If output directory exists, it won't do anything.
+
+we can specify the mode while writing the data frame as below:
+//Using string
+df.write.mode("error").format("csv").save("dbfs:/sales/csv")
+
+//Using option()
+df.write.option("mode","error").format("csv").save("dbfs:/sales/csv")
