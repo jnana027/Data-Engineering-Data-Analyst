@@ -1,0 +1,38 @@
+🚀 Excited to share insights into the Read and Write modes in Apache Spark! 📊
+
+Apache Spark, a powerful distributed computing engine, offers versatile modes for processing data: Batch and Streaming. Let's delve into how each mode operates:
+
+📝 Batch Processing:
+In batch mode, Spark processes fixed-size data chunks, ideal for scenarios where data is collected over time. It reads data from stable storage systems like HDFS or S3, processes it in parallel across the cluster, and writes results back to storage. Perfect for comprehensive data analysis and processing large datasets efficiently.
+
+🔎 Reading in Batch Mode:
+Spark's spark.read API enables seamless data ingestion from various sources including CSVs, Parquet, JSON, and databases.
+
+💡 Writing in Batch Mode:
+Data processed in batch mode can be stored back to storage using methods like DataFrame.write, supporting various formats and destinations.
+
+🌊 Streaming Processing:
+Streaming mode processes continuous data streams, suitable for real-time analytics and monitoring. It reads data in micro-batches or continuously from streaming sources, processes it in near-real-time, and writes results incrementally.
+
+🎯 Reading in Streaming Mode:
+Structured streaming APIs in Spark facilitate reading data from streaming sources like Kafka, Flume, etc., treating data as an unbounded stream.
+
+📝 Writing in Streaming Mode:
+Processed streaming data can be written to diverse destinations such as files, databases, or streaming sinks like Kafka, ensuring seamless data flow in real-time.
+
+
+Output Modes in Pyspark
+
+In PySpark, the term "output mode" refers to a configuration setting that determines how the result of a structured streaming query is written or processed. Structured streaming is a scalable and fault-tolerant stream processing engine in Apache Spark that allows you to process real-time data using a SQL-like interface.
+
+PySpark provides various output modes that empower us to control the way data is written and processed.
+
+🎯 Append Mode: In this mode, only new rows appended to the result are written to the output. It's efficient when you're continuously adding data to an existing dataset. Use it with `.writeStream` for streaming data.
+
+🎯Complete Mode: Complete mode writes the entire result of the streaming query to the output, regardless of whether the data in the result has changed or not. It is typically used in batch processing scenarios where you want to maintain the entire result set, useful for aggregations and summary data.
+
+🎯 Update Mode: Writes only the rows that have been updated in the result since the last trigger. This mode is useful when you want to track changes incrementally in the output. For example, if you are maintaining a running total of values, update mode will only write the updated totals.
+
+🎯 Overwrite Mode: Overwrite mode replaces the existing data in the output with the new result every time the query is triggered. It is commonly used when you want to refresh the entire dataset in the output with the latest computation.
+
+🎯 SYNTAX -- df.writeStream.outputMode("append/complete/update/overwrite").format("csv").option("path", "output_path").start()
