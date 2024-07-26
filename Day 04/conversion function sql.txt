@@ -1,0 +1,54 @@
+Converting String to Date.
+1.cast()
+2.convert()
+3.Try_cast()
+4.Try_convert()
+
+1.cast():
+cast(expression as datatype)
+
+ex1:input format in date:('date/month/year' as date)
+select cast('07/04/2024' as date) as string_to_date
+output format in date:2024-07-04
+
+
+ex2:input format in date:('year/month/date' as date)
+select cast('2024/04/07' as datetime) as string_to_datetime
+output format in date:2024-04-07 00:00:00.000
+
+ex3:input format in date:date to string
+select CAST(GETDATE() as varchar(50)) as date_to_string
+output format in date:Apr  7 2024  5:10PM
+
+
+2.convert():
+syn:convert(datatype,expression,style)
+
+ex1:select convert(date,'07-04-2024',103) as date
+2024-04-07
+
+ex2:select convert(datetime,'07-04-2024',103) as date
+2024-04-07 00:00:00.000
+
+ex3:select convert(date,'07-04-2024',110) as date
+2024-07-04
+
+ex4:select convert(datetime,'07-04-2024',102) as date
+2024-07-04 00:00:00.000
+
+ex5:this will through an error 
+we have to specify the style also,because the string format is not supported as of now
+select convert(date,'14/12/2024') as date
+They also show Error 'Conversion failed when converting date and/or time from character string.'
+
+
+we change format '14/12/2024'(dd/mm/year) to '2024/12/14'(year/mm/dd) or change the style 
+select convert(date,'2024/12/14') as date
+2024-12-14
+
+select convert(date,'14/12/2024',104) as date
+2024-12-14
+
+select convert(date,'14/12/2024',103) as date
+2024-12-14
+
